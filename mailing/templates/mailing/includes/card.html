@@ -1,0 +1,45 @@
+{% load my_tags %}
+<div class="col-md-4">
+	<div class="card mb-4 box-shadow">
+		<img alt="Card image cap" class="card-img-top" src="{{ object.image|my_media }}">
+		<div class="card-body">
+			<p class="card-text">наименование: {{ object.title.upper }}</p>
+			{% if cropped %}
+				<p class="card-text">описание: {{ object.description|truncatechars:100 }}</p>
+			{% else %}
+				<p class="card-text">описание: {{ object.description }}</p>
+			{% endif %}
+			<p class="card-text">цена: {{ object.price }}</p>
+			<p class="card-text">продавец: {{ object.seller|default:"магазин" }}</p>
+			{% if is_product %}
+				<div class="d-flex justify-content-between align-items-center">
+					<div class="btn-group">
+						<a class="btn btn-sm btn-outline-secondary" href="{% url 'catalog:categories' %}" type="button">Категории</a>
+						<a class="btn btn-sm btn-outline-secondary"
+						   href="{% url 'catalog:category_products' object.pk %}"
+						   type="button">Товары</a>
+					</div>
+				</div>
+			{% else %}
+				<div class="d-flex justify-content-between align-items-center">
+					<div class="btn-group">
+						<a class="btn btn-sm btn-outline-secondary" href="{% url 'catalog:categories' %}" type="button">Категории</a>
+						{% if object.seller == request.user or request.user.is_staff %}
+							<a class="btn btn-sm btn-outline-secondary"
+							   href="{% url 'catalog:update_product' object.pk %}"
+							   type="button">Изменить</a>
+							{% if card %}
+								<a class="btn btn-sm btn-outline-secondary" href="javascript:history.back()"
+								   type="button">Вернуться</a>
+							{% else %}
+								<a class="btn btn-sm btn-outline-secondary"
+								   href="{% url 'catalog:read_product' object.pk %}"
+								   type="button">Подробнее</a>
+							{% endif %}
+						{% endif %}
+					</div>
+				</div>
+			{% endif %}
+		</div>
+	</div>
+</div>

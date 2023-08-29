@@ -14,7 +14,7 @@ urlpatterns = [
     path('delete/<int:pk>/', MailingSettingsDeleteView.as_view(), name='mailing_delete'),
 
     path('<int:pk>/clients/', MailingClientsListView.as_view(), name='mailing_clients'),
-    path('<int:pk>/clients/add/<int:client_pk>/', toggle_client, name='mailing_clients_toggle'),
+    path('<int:pk>/clients/toggle/<int:client_pk>/', toggle_client, name='mailing_clients_toggle'),
 
     path('clients/', ClientListView.as_view(), name='clients'),
     path('clients/create/', ClientCreateView.as_view(), name='clients_create'),

@@ -41,6 +41,9 @@ class MailingClientsListView(ListView):
 
 
 def toggle_client(request, pk, client_pk):
+    print(f'{request = }')
+    print(f'{pk = }')
+    print(f'{client_pk = }')
     if MailingClient.objects.filter(client_id=client_pk, settings_id=pk).exists():
         MailingClient.objects.filter(client_id=client_pk, settings_id=pk).delete()
     else:

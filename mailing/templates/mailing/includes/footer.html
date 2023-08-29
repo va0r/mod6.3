@@ -1,11 +1,11 @@
 <div class="container">
-    <p class="float-right">
-        <a href="#">Наверх</a>
-    </p>
-    <p>Email Рассылка</p>
-	<p>Приложение для рассылки рекламных сообщений</p>
-	<p>Посетите <a href="{% url 'mailing:mailing_list' %}">домашнюю страницу</a> или почитайте <a href="#">наш блог</a></p>
+	Email Рассылка<br>
+	Приложение для рассылки рекламных сообщений<br>
+	Посетите <a href="{% url 'mailing:mailing_list' %}">домашнюю страницу</a> или почитайте <a href="#">наш блог</a><br>
 	{% if user.is_superuser %}
 		<a href="/admin">Администрирование</a>
 	{% endif %}
+	<div class="float-right">
+		<a href="#">Наверх</a>
+	</div>
 </div>

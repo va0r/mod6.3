@@ -7,7 +7,6 @@ from mailing.views import MailingListView, MailingSettingsCreateView, MailingSet
 
 app_name = MailingConfig.name
 
-
 urlpatterns = [
     path('', MailingListView.as_view(), name='mailing_list'),
     path('create/', MailingSettingsCreateView.as_view(), name='mailing_create'),

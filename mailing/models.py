@@ -1,6 +1,5 @@
 from django.db import models
 
-
 NULLABLE = {'blank': True, 'null': True}
 
 
@@ -19,11 +18,9 @@ class Client(models.Model):
 
 
 class MailingSettings(models.Model):
-
     PERIOD_DAILY = 'daily'
     PERIOD_WEEKLY = 'weekly'
     PERIOD_MONTHLY = 'monthly'
-
     PERIODS = (
         (PERIOD_DAILY, 'Ежедневная'),
         (PERIOD_WEEKLY, 'Раз в неделю'),
@@ -87,9 +84,7 @@ class MailingLog(models.Model):
 
     client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name='Клиент')
     settings = models.ForeignKey(MailingSettings, on_delete=models.CASCADE, verbose_name='Настройка')
-
     status = models.CharField(choices=STATUSES, default=STATUS_OK, verbose_name='Статус')
-
     last_try = models.DateTimeField(auto_now_add=True, verbose_name='Дата последней попытки')
 
     class Meta:

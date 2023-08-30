@@ -24,24 +24,21 @@ def send_email(ms, mc):
 
 def send_mails():
     now = datetime.datetime.now()
+    now_utc = now.astimezone(datetime.timezone.utc)
     for ms in MailingSettings.objects.filter(status=MailingSettings.STATUS_STARTED):
         for mc in Client.objects.all():
             ml = MailingLog.objects.filter(client=mc.id, settings=ms)
             if ml.exists():
                 last_try_date = ml.order_by('-last_try').first()
-                print(f'{last_try_date = }')
+                last_try_date_utc = last_try_date.last_try.astimezone(datetime.timezone.utc)
                 if ms.period == MailingSettings.PERIOD_DAILY:
-                    if (now - last_try_date).days >= 1:
-                        print('ok -- daily')
-                        # send_email(ms, mc)
+                    if (now_utc - last_try_date_utc).days >= 1:
+                        send_email(ms, mc)
                 elif ms.period == MailingSettings.PERIOD_WEEKLY:
-                    if (now - last_try_date).days >= 7:
-                        print('ok -- weekly')
-                        # send_email(ms, mc)
+                    if (now_utc - last_try_date_utc).days >= 7:
+                        send_email(ms, mc)
                 elif ms.period == MailingSettings.PERIOD_MONTHLY:
-                    if (now - last_try_date).days >= 30:
-                        print('ok -- monthly')
-                        # send_email(ms, mc)
+                    if (now_utc - last_try_date_utc).days >= 30:
+                        send_email(ms, mc)
             else:
-                print('ok -- else')
-                # send_email(ms, mc)
+                send_email(ms, mc)

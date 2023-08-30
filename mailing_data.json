@@ -1,0 +1,122 @@
+[
+  {
+    "model": "mailing.client",
+    "pk": 8,
+    "fields": {
+      "email": "en.saio@yandex.ru",
+      "first_name": "en.saio",
+      "last_name": "yandex.ru",
+      "comment": "",
+      "is_blocked": false,
+      "domain": "yandex.ru"
+    }
+  },
+  {
+    "model": "mailing.client",
+    "pk": 9,
+    "fields": {
+      "email": "en.saio@yandex.by",
+      "first_name": "en.saio",
+      "last_name": "yandex.by",
+      "comment": "",
+      "is_blocked": false,
+      "domain": "yandex.by"
+    }
+  },
+  {
+    "model": "mailing.client",
+    "pk": 10,
+    "fields": {
+      "email": "en.saio@yandex.kz",
+      "first_name": "en.saio",
+      "last_name": "yandex.kz",
+      "comment": "",
+      "is_blocked": false,
+      "domain": "yandex.kz"
+    }
+  },
+  {
+    "model": "mailing.client",
+    "pk": 11,
+    "fields": {
+      "email": "en.saio@yandex.com",
+      "first_name": "en.saio",
+      "last_name": "yandex.com",
+      "comment": "",
+      "is_blocked": false,
+      "domain": "yandex.com"
+    }
+  },
+  {
+    "model": "mailing.mailingsettings",
+    "pk": 1,
+    "fields": {
+      "time": "12:00:00",
+      "period": "daily",
+      "status": "started",
+      "message": 2
+    }
+  },
+  {
+    "model": "mailing.mailingsettings",
+    "pk": 2,
+    "fields": {
+      "time": "11:00:00",
+      "period": "weekly",
+      "status": "started",
+      "message": 4
+    }
+  },
+  {
+    "model": "mailing.mailingsettings",
+    "pk": 3,
+    "fields": {
+      "time": "23:59:00",
+      "period": "monthly",
+      "status": "done",
+      "message": 1
+    }
+  },
+  {
+    "model": "mailing.mailingsettings",
+    "pk": 4,
+    "fields": {
+      "time": "15:00:00",
+      "period": "daily",
+      "status": "created",
+      "message": 4
+    }
+  },
+  {
+    "model": "mailing.mailingmessage",
+    "pk": 1,
+    "fields": {
+      "subject": "h1",
+      "message": "b1"
+    }
+  },
+  {
+    "model": "mailing.mailingmessage",
+    "pk": 2,
+    "fields": {
+      "subject": "h2",
+      "message": "b2"
+    }
+  },
+  {
+    "model": "mailing.mailingmessage",
+    "pk": 3,
+    "fields": {
+      "subject": "h3",
+      "message": "b3"
+    }
+  },
+  {
+    "model": "mailing.mailingmessage",
+    "pk": 4,
+    "fields": {
+      "subject": "h4",
+      "message": "b4"
+    }
+  }
+]

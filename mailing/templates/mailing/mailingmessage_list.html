@@ -3,10 +3,20 @@
 {% block content %}
 	<div class="col-8">
 		<a href="{% url 'mailing:mailing_create' %}" class="btn btn-success" style="width: 100%">
-			Создать сообщение
+			Создать сообщение рассылки
 		</a>
 	</div>
-	<div class="col-8"><p></p></div>
+
+	<div class="col-8"><br></div>
+	<div class="col-8">
+		<div style="background-color: lightgrey; padding: 20px 20px; text-align: left; height: 150px;">
+			<p><b>Сообщение рассылки</b> -- это тема и текст рассылки.<br>
+				Сообщение должно быть добавлено в настройки рассылки.<br>
+				После этого все клиенты рассылки получают электронное письмо с темой сообщения в теме письма и телом сообщения как текстом письма.</p>
+		</div>
+	</div>
+	<div class="col-8"><br></div>
+
 	<div class="col-8">
 		<div class="row">
 			{% for item in object_list %}

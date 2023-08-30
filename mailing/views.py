@@ -109,7 +109,7 @@ class MessageDeleteView(StatisticsMixin, DeleteView):
     success_url = reverse_lazy('mailing:messages')
 
 
-class ContactListView(ListView):
+class ContactListView(StatisticsMixin, ListView):
     model = Contact
 
     extra_context = {

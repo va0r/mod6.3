@@ -3,16 +3,26 @@
 {% block content %}
 	<div class="col-8">
 		<a href="{% url 'mailing:mailing_create' %}" class="btn btn-success" style="width: 100%">
-			Создать клиента
+			Создать клиента рассылки
 		</a>
 	</div>
-	<div class="col-8"><p></p></div>
+
+	<div class="col-8"><br></div>
+	<div class="col-8">
+		<div style="background-color: lightgrey; padding: 20px 20px; text-align: left; height: 150px;">
+			<p><b>Клиент рассылки</b> -- это получатель рассылки.<br>
+				Для того, чтобы получить письмо, клиент не должен быть заблокирован.<br>
+				Клиент автоматически получает все рассылки, запущенные в настоящий момент.</p>
+		</div>
+	</div>
+	<div class="col-8"><br></div>
+
 	<div class="col-8">
 		<div class="row">
 			{% for item in object_list %}
 				<div class="col-6">
 					<div class="card">
-						<div class="card-header text-center badge-primary">Клиент #{{ item.pk }} {{ item.email }}</div>
+						<div class="card-header text-center badge-primary">Получатель (клиент) {{ item.email }}</div>
 						<div class="card-body">
 							<table class="table">
 								<tr>
@@ -37,9 +47,11 @@
 						<div class="card-footer">
 							<a href="{% url 'mailing:clients_update' item.pk %}" class="btn badge-info">Изменить</a>
 							{% if item.is_blocked %}
-								<a href="{% url 'mailing:client__is_blocked_toggle' item.pk %}" class="btn badge-success">unblock</a>
+								<a href="{% url 'mailing:client__is_blocked_toggle' item.pk %}"
+								   class="btn badge-success">unblock</a>
 							{% else %}
-								<a href="{% url 'mailing:client__is_blocked_toggle' item.pk %}" class="btn badge-warning">block</a>
+								<a href="{% url 'mailing:client__is_blocked_toggle' item.pk %}"
+								   class="btn badge-warning">block</a>
 							{% endif %}
 							<a href="{% url 'mailing:clients_delete' item.pk %}" class="btn badge-danger">Удалить</a>
 						</div>

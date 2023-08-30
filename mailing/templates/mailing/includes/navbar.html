@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-md bg-dark navbar-dark">
-	<a class="navbar-brand" href="#">Email Рассылка</a>
+	<a class="navbar-brand" href="{% url 'mailing:mailing_list' %}">Email Рассылка</a>
 	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
 		<span class="navbar-toggler-icon"></span>
 	</button>
@@ -9,10 +9,10 @@
 				<a class="nav-link" href="{% url 'mailing:mailing_list' %}">Главная</a>
 			</li>
 			<li class="nav-item">
-				<a class="nav-link" href="{% url 'mailing:clients' %}">Получатели</a>
+				<a class="nav-link" href="{% url 'mailing:clients' %}">Клиенты</a>
 			</li>
 			<li class="nav-item">
-				<a class="nav-link" href="{% url 'mailing:messages' %}">Тексты рассылок</a>
+				<a class="nav-link" href="{% url 'mailing:messages' %}">Сообщения</a>
 			</li>
 			<li class="nav-item">
 				<a class="nav-link" href="#">Регистрация | Вход</a>

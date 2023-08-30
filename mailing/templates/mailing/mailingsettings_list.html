@@ -3,16 +3,26 @@
 {% block content %}
 	<div class="col-8">
 		<a href="{% url 'mailing:mailing_create' %}" class="btn btn-success" style="width: 100%">
-			Создать рассылку
+			Создать настройки рассылки
 		</a>
 	</div>
-	<div class="col-8"><p></p></div>
+
+	<div class="col-8"><br></div>
+	<div class="col-8">
+		<div style="background-color: lightgrey; padding: 20px 20px; text-align: left; height: 150px">
+			<p><b>Настройки рассылки</b> -- это определение значимых параметров рассылки.<br>
+				При создании рассылки определяются время, период и статус рассылки, а так же выбирается сообщение рассылки.<br>
+				Сообщение рассылки отправляется всем клиентам рассылки.</p>
+		</div>
+	</div>
+	<div class="col-8"><br></div>
+
 	<div class="col-8">
 		<div class="row">
 			{% for item in object_list %}
 				<div class="col-6">
 					<div class="card">
-						<div class="card-header text-center badge-primary">Рассылка #{{ item.pk }}</div>
+						<div class="card-header text-center badge-primary">Условия рассылки #{{ item.pk }}</div>
 						<div class="card-body">
 							<table class="table">
 								<tr>

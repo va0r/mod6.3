@@ -84,3 +84,16 @@ class MailingLog(models.Model):
     class Meta:
         verbose_name = 'Лог'
         verbose_name_plural = 'Логи'
+
+
+class Contact(models.Model):
+    key = models.CharField(max_length=25, verbose_name='Ключ')
+    value = models.CharField(max_length=100, verbose_name='Значение')
+
+    def __str__(self):
+        return f'{self.key}: {self.value}'
+
+    class Meta:
+        verbose_name = 'Контакт'
+        verbose_name_plural = 'Контакты'
+        ordering = ['pk']

@@ -3,7 +3,7 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 from mailing.forms import MailingSettingsForm, ClientForm, MessageForm
-from mailing.models import MailingSettings, Client, MailingMessage
+from mailing.models import MailingSettings, Client, MailingMessage, Contact
 
 
 class StatisticsMixin:
@@ -41,7 +41,7 @@ def toggle__is_blocked(request, pk):
         client.is_blocked = False
     client.save()
 
-    return redirect('mailing:clients')  # Перенаправление на страницу со списком клиентов
+    return redirect('mailing:clients')
 
 
 class MailingSettingsCreateView(StatisticsMixin, CreateView):
@@ -107,3 +107,12 @@ class MessageUpdateView(StatisticsMixin, UpdateView):
 class MessageDeleteView(StatisticsMixin, DeleteView):
     model = MailingMessage
     success_url = reverse_lazy('mailing:messages')
+
+
+class ContactListView(ListView):
+    model = Contact
+
+    extra_context = {
+        'title': 'Email Рассылка',
+        'description': 'Контакты'
+    }

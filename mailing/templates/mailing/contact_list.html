@@ -1,0 +1,24 @@
+{% extends 'mailing/base.html' %}
+
+{% block content %}
+
+	{% load static %}
+
+	<div class="col-md-8">
+		<div class="card">
+			<div class="card-header text-center badge-primary">
+				Контакты
+			</div>
+			<div class="card-body">
+				<img src="/static/img/contacts.jpg" style="margin-bottom: 20px;">
+				<p class="card-text">почта: aaa@bbb.ccc</p>
+				<p class="card-text">телефон: +7 999 123 45 67</p>
+			</div>
+			<div class="card-footer">
+				<a class="btn btn-sm btn-outline-secondary" href="javascript:history.back()"
+				   type="button">Вернуться</a>
+			</div>
+		</div>
+	</div>
+
+{% endblock %}

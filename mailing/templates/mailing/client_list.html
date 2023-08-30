@@ -37,9 +37,9 @@
 						<div class="card-footer">
 							<a href="{% url 'mailing:clients_update' item.pk %}" class="btn badge-info">Изменить</a>
 							{% if item.is_blocked %}
-								<a href="{% url 'mailing:client__is_block_toggle' item.pk %}" class="btn badge-success">unblock</a>
+								<a href="{% url 'mailing:client__is_blocked_toggle' item.pk %}" class="btn badge-success">unblock</a>
 							{% else %}
-								<a href="{% url 'mailing:client__is_block_toggle' item.pk %}" class="btn badge-warning">block</a>
+								<a href="{% url 'mailing:client__is_blocked_toggle' item.pk %}" class="btn badge-warning">block</a>
 							{% endif %}
 							<a href="{% url 'mailing:clients_delete' item.pk %}" class="btn badge-danger">Удалить</a>
 						</div>

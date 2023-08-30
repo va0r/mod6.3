@@ -130,8 +130,20 @@ STATICFILES_DIRS = (
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'users.User'
+# MEDIA URL & ROOT
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# Убираем warnings двойного использования templatetags
+SILENCED_SYSTEM_CHECKS = ["templates.E003"]
+
+# Модель аутентификации пользователя и редиректы
+AUTH_USER_MODEL = 'users.User'
+# LOGIN_REDIRECT_URL = '/'
+# LOGOUT_REDIRECT_URL = '/'
+# LOGIN_URL = '/users/'
+
+# Данные для отправки писем
 EMAIL_HOST = os.getenv('EMAIL_HOST')
 EMAIL_PORT = os.getenv('EMAIL_PORT')
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
@@ -142,3 +154,15 @@ EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS') == 'True'
 CRONJOBS = [
     ('*/5 * * * *', 'mailing.services.send_mails')
 ]
+
+# Кеш
+
+CACHE_ENABLED = os.getenv('CACHE_ENABLED') == 'True'
+
+if CACHE_ENABLED:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": os.getenv('CACHE_LOCATION'),
+        }
+    }

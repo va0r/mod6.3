@@ -28,9 +28,9 @@
 		<div class="col-md-8">
 			<div class="h4 text-center">Статистика рассылок</div>
 			<ul class="list-group">
-				<li class="list-group-item">Количество рассылок всего: 150</li>
-				<li class="list-group-item">Количество активных рассылок: 25</li>
-				<li class="list-group-item">Количество уникальных клиентов для рассылок: 120</li>
+				<li class="list-group-item">Количество рассылок всего: {{ count_mailings_all }}</li>
+				<li class="list-group-item">Количество активных рассылок: {{ count_mailings_active }}</li>
+				<li class="list-group-item">Количество уникальных клиентов для рассылок: {{ count_clients }}</li>
 			</ul>
 		</div>
 		<div class="col-md-4">

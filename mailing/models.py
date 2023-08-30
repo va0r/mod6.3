@@ -8,6 +8,13 @@ class Client(models.Model):
     first_name = models.CharField(**NULLABLE, verbose_name='Имя', max_length=150)
     last_name = models.CharField(**NULLABLE, verbose_name='Фамилия', max_length=150)
     comment = models.TextField(**NULLABLE, verbose_name='Комментарий')
+    is_blocked = models.BooleanField(verbose_name='Заблокирован', default=False)
+
+    domain = models.CharField(verbose_name='Домен', max_length=255, blank=True, editable=False)
+
+    def save(self, *args, **kwargs):
+        self.domain = self.email.split('@')[-1]
+        super(Client, self).save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.first_name} {self.last_name} ({self.email})'
@@ -47,18 +54,6 @@ class MailingSettings(models.Model):
     class Meta:
         verbose_name = 'Настройка'
         verbose_name_plural = 'Настройки'
-
-
-class MailingClient(models.Model):
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name='Клиент')
-    settings = models.ForeignKey(MailingSettings, on_delete=models.CASCADE, verbose_name='Настройка')
-
-    def __str__(self):
-        return f'{self.client} / {self.settings}'
-
-    class Meta:
-        verbose_name = 'Клиент рассылки'
-        verbose_name_plural = 'Клиенты рассылки'
 
 
 class MailingMessage(models.Model):

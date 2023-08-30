@@ -1,25 +1,24 @@
 from django.urls import path
 
 from mailing.apps import MailingConfig
-from mailing.views import MailingListView, MailingSettingsCreateView, MailingSettingsUpdateView, ClientListView, \
-    ClientCreateView, ClientUpdateView, ClientDeleteView, MailingSettingsDeleteView, MailingClientsListView, \
-    toggle_client, MessageListView, MessageDeleteView, MessageUpdateView, MessageCreateView
+from mailing.views import MailingSettingsCreateView, MailingSettingsUpdateView, ClientListView, \
+    ClientCreateView, ClientUpdateView, ClientDeleteView, MailingSettingsDeleteView, MessageListView, MessageDeleteView, \
+    MessageUpdateView, MessageCreateView, MailingSettingsListView, toggle__is_blocked
 
 app_name = MailingConfig.name
 
 urlpatterns = [
-    path('', MailingListView.as_view(), name='mailing_list'),
+    path('', MailingSettingsListView.as_view(), name='mailing_list'),
     path('create/', MailingSettingsCreateView.as_view(), name='mailing_create'),
     path('update/<int:pk>/', MailingSettingsUpdateView.as_view(), name='mailing_update'),
     path('delete/<int:pk>/', MailingSettingsDeleteView.as_view(), name='mailing_delete'),
-
-    path('<int:pk>/clients/', MailingClientsListView.as_view(), name='mailing_clients'),
-    path('<int:pk>/clients/toggle/<int:client_pk>/', toggle_client, name='mailing_clients_toggle'),
 
     path('clients/', ClientListView.as_view(), name='clients'),
     path('clients/create/', ClientCreateView.as_view(), name='clients_create'),
     path('clients/update/<int:pk>/', ClientUpdateView.as_view(), name='clients_update'),
     path('clients/delete/<int:pk>/', ClientDeleteView.as_view(), name='clients_delete'),
+
+    path('clients/toggle/<int:pk>/', toggle__is_blocked, name='client__is_block_toggle'),
 
     path('messages/', MessageListView.as_view(), name='messages'),
     path('messages/create/', MessageCreateView.as_view(), name='messages_create'),

@@ -1,99 +1,109 @@
-from django.shortcuts import redirect
-from django.urls import reverse_lazy, reverse
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 from mailing.forms import MailingSettingsForm, ClientForm, MessageForm
-from mailing.models import MailingSettings, Client, MailingClient, MailingMessage
+from mailing.models import MailingSettings, Client, MailingMessage
 
 
-class MailingListView(ListView):
+class StatisticsMixin:
+    def get_statistics_context(self):
+        context = {
+            'count_mailings_all': MailingSettings.objects.all().count(),
+            'count_mailings_active': MailingSettings.objects.filter(status=MailingSettings.STATUS_STARTED).count(),
+            'count_clients': Client.objects.distinct().count(),
+        }
+        return context
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        statistics_context = self.get_statistics_context()
+        context.update(statistics_context)
+        return context
+
+
+class MailingSettingsListView(StatisticsMixin, ListView):
     model = MailingSettings
-    extra_context = {
-        'title': 'Список рассылок'
-    }
 
-
-class MailingSettingsCreateView(CreateView):
-    model = MailingSettings
-    form_class = MailingSettingsForm
-    success_url = reverse_lazy('mailing:mailing_list')
-
-
-class MailingSettingsUpdateView(UpdateView):
-    model = MailingSettings
-    form_class = MailingSettingsForm
-    success_url = reverse_lazy('mailing:mailing_list')
-
-
-class MailingSettingsDeleteView(DeleteView):
-    model = MailingSettings
-    success_url = reverse_lazy('mailing:mailing_list')
-
-
-class MailingClientsListView(ListView):
-    model = MailingClient
-
-    def get_context_data(self, *args, **kwargs):
-        context_data = super().get_context_data(*args, **kwargs)
-        context_data['clients'] = Client.objects.all()
-        context_data['mailing_pk'] = self.kwargs.get('pk')
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        context_data['title'] = 'Email Рассылка'
+        context_data['description'] = 'Главная'
         return context_data
 
 
-def toggle_client(request, pk, client_pk):
-    print(f'{request = }')
-    print(f'{pk = }')
-    print(f'{client_pk = }')
-    if MailingClient.objects.filter(client_id=client_pk, settings_id=pk).exists():
-        MailingClient.objects.filter(client_id=client_pk, settings_id=pk).delete()
+def toggle__is_blocked(request, pk):
+    client = get_object_or_404(Client, pk=pk)
+
+    if not client.is_blocked:
+        client.is_blocked = True
     else:
-        MailingClient.objects.create(client_id=client_pk, settings_id=pk)
-    return redirect(reverse('mailing:mailing_clients', args=[pk]))
+        client.is_blocked = False
+    client.save()
+
+    return redirect('mailing:clients')  # Перенаправление на страницу со списком клиентов
 
 
-class ClientListView(ListView):
+class MailingSettingsCreateView(StatisticsMixin, CreateView):
+    model = MailingSettings
+    form_class = MailingSettingsForm
+    success_url = reverse_lazy('mailing:mailing_list')
+
+
+class MailingSettingsUpdateView(StatisticsMixin, UpdateView):
+    model = MailingSettings
+    form_class = MailingSettingsForm
+    success_url = reverse_lazy('mailing:mailing_list')
+
+
+class MailingSettingsDeleteView(StatisticsMixin, DeleteView):
+    model = MailingSettings
+    success_url = reverse_lazy('mailing:mailing_list')
+
+
+class ClientListView(StatisticsMixin, ListView):
     model = Client
     extra_context = {
         'title': 'Список клиентов'
     }
 
 
-class ClientCreateView(CreateView):
+class ClientCreateView(StatisticsMixin, CreateView):
     model = Client
     form_class = ClientForm
     success_url = reverse_lazy('mailing:clients')
 
 
-class ClientUpdateView(UpdateView):
+class ClientUpdateView(StatisticsMixin, UpdateView):
     model = Client
     form_class = ClientForm
     success_url = reverse_lazy('mailing:clients')
 
 
-class ClientDeleteView(DeleteView):
+class ClientDeleteView(StatisticsMixin, DeleteView):
     model = Client
     success_url = reverse_lazy('mailing:clients')
 
 
-class MessageListView(ListView):
+class MessageListView(StatisticsMixin, ListView):
     model = MailingMessage
     extra_context = {
         'title': 'Список сообщений'
     }
 
 
-class MessageCreateView(CreateView):
+class MessageCreateView(StatisticsMixin, CreateView):
     model = MailingMessage
     form_class = MessageForm
     success_url = reverse_lazy('mailing:messages')
 
 
-class MessageUpdateView(UpdateView):
+class MessageUpdateView(StatisticsMixin, UpdateView):
     model = MailingMessage
     form_class = MessageForm
     success_url = reverse_lazy('mailing:messages')
 
 
-class MessageDeleteView(DeleteView):
+class MessageDeleteView(StatisticsMixin, DeleteView):
     model = MailingMessage
     success_url = reverse_lazy('mailing:messages')

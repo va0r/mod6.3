@@ -1,0 +1,14 @@
+{% extends 'mailing/base.html' %}
+
+{% block content %}
+
+	<div class="col-8 mb-4">
+		<a class="btn btn-success" style="width: 100%" href="{% url 'blog:CREATE' %}">Создать запись блога</a>
+	</div>
+	<div class="row">
+		{% for object in object_list %}
+			{% include 'blog/includes/card.html' %}
+		{% endfor %}
+	</div>
+
+{% endblock %}

@@ -2,7 +2,7 @@
 
 {% block content %}
 	<div class="col-8">
-		<a href="{% url 'mailing:mailing_create' %}" class="btn btn-success" style="width: 100%">
+		<a href="{% url 'mailing:clients_create' %}" class="btn btn-success" style="width: 100%">
 			Создать клиента рассылки
 		</a>
 	</div>
@@ -22,7 +22,7 @@
 			{% for item in object_list %}
 				<div class="col-6">
 					<div class="card">
-						<div class="card-header text-center badge-primary">Получатель (клиент) {{ item.email }}</div>
+						<div class="card-header text-center badge-primary">Клиент {{ item.email }}</div>
 						<div class="card-body">
 							<table class="table">
 								<tr>

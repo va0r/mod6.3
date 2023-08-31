@@ -1,6 +1,29 @@
+import datetime
+
+from django.conf import settings
+from django.core.mail import send_mail
 from django.db import models
 
 NULLABLE = {'blank': True, 'null': True}
+
+
+def send_email_one(ms, mc):
+    result = send_mail(
+        subject=ms.message.subject,
+        message=ms.message.message,
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=[mc.email],
+        fail_silently=False
+    )
+    MailingLog.objects.create(
+        status=MailingLog.STATUS_OK if result else MailingLog.STATUS_FAILED,
+        settings=ms,
+        client=mc
+    )
+
+
+def get_now_utc():
+    return datetime.datetime.now().astimezone(datetime.timezone.utc)
 
 
 class Client(models.Model):
@@ -9,12 +32,31 @@ class Client(models.Model):
     last_name = models.CharField(**NULLABLE, verbose_name='Фамилия', max_length=150)
     comment = models.TextField(**NULLABLE, verbose_name='Комментарий')
     is_blocked = models.BooleanField(verbose_name='Заблокирован', default=False)
-
     domain = models.CharField(verbose_name='Домен', max_length=255, blank=True, editable=False)
 
     def save(self, *args, **kwargs):
+        # запись домена почты в объект "Клиент"
         self.domain = self.email.split('@')[-1]
+        # сохранение объекта
         super(Client, self).save(*args, **kwargs)
+        # отправка рассылок объекту
+        if not self.is_blocked:
+            now_utc = get_now_utc()
+            for ms in MailingSettings.objects.filter(status=MailingSettings.STATUS_STARTED):
+                ml = MailingLog.objects.filter(client=self.id, settings=ms)
+                if ml.exists():
+                    last_try_date_utc = ml.order_by('-last_try').first().last_try.astimezone(datetime.timezone.utc)
+                    if ms.period == MailingSettings.PERIOD_DAILY:
+                        if (now_utc - last_try_date_utc).days >= 1:
+                            send_email_one(ms, self)
+                    elif ms.period == MailingSettings.PERIOD_WEEKLY:
+                        if (now_utc - last_try_date_utc).days >= 7:
+                            send_email_one(ms, self)
+                    elif ms.period == MailingSettings.PERIOD_MONTHLY:
+                        if (now_utc - last_try_date_utc).days >= 30:
+                            send_email_one(ms, self)
+                else:
+                    send_email_one(ms, self)
 
     def __str__(self):
         return f'{self.first_name} {self.last_name} ({self.email})'
@@ -22,6 +64,7 @@ class Client(models.Model):
     class Meta:
         verbose_name = 'Клиент'
         verbose_name_plural = 'Клиенты'
+        ordering = ['pk']
 
 
 class MailingSettings(models.Model):
@@ -48,6 +91,28 @@ class MailingSettings(models.Model):
     status = models.CharField(max_length=20, choices=STATUSES, default=STATUS_CREATED, verbose_name='Статус')
     message = models.ForeignKey('MailingMessage', on_delete=models.CASCADE, verbose_name='Сообщение', **NULLABLE)
 
+    def save(self, *args, **kwargs):
+        # сохранение объекта
+        super(MailingSettings, self).save(*args, **kwargs)
+        # отправка рассылки объектам
+        if self.status == 'started':
+            now_utc = get_now_utc()
+            for mc in Client.objects.filter(is_blocked=False):
+                ml = MailingLog.objects.filter(client=mc.id, settings=self)
+                if ml.exists():
+                    last_try_date_utc = ml.order_by('-last_try').first().last_try.astimezone(datetime.timezone.utc)
+                    if self.period == MailingSettings.PERIOD_DAILY:
+                        if (now_utc - last_try_date_utc).days >= 1:
+                            send_email_one(self, mc)
+                    elif self.period == MailingSettings.PERIOD_WEEKLY:
+                        if (now_utc - last_try_date_utc).days >= 7:
+                            send_email_one(self, mc)
+                    elif self.period == MailingSettings.PERIOD_MONTHLY:
+                        if (now_utc - last_try_date_utc).days >= 30:
+                            send_email_one(self, mc)
+                else:
+                    send_email_one(self, mc)
+
     def __str__(self):
         return f'{self.time} / {self.period}'
 
@@ -66,6 +131,7 @@ class MailingMessage(models.Model):
     class Meta:
         verbose_name = 'Письмо'
         verbose_name_plural = 'Письма'
+        ordering = ['pk']
 
 
 class MailingLog(models.Model):
@@ -84,6 +150,7 @@ class MailingLog(models.Model):
     class Meta:
         verbose_name = 'Лог'
         verbose_name_plural = 'Логи'
+        ordering = ['pk']
 
 
 class Contact(models.Model):

@@ -1,3 +1,5 @@
+import random
+
 from django.db import models
 
 NULLABLE = {'blank': True, 'null': True}
@@ -11,6 +13,7 @@ class Note(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     is_published = models.BooleanField(default=True, verbose_name='Опубликовано')
     cnt_views = models.IntegerField(default=0, verbose_name='Количество просмотров')
+    random_number = models.FloatField(editable=False, db_index=True)
 
     def __str__(self):
         return self.title
@@ -19,3 +22,8 @@ class Note(models.Model):
         verbose_name = 'Запись'
         verbose_name_plural = 'Записи'
         ordering = ('pk',)
+
+    def save(self, *args, **kwargs):
+        if not self.random_number:
+            self.random_number = random.random()
+        super(Note, self).save(*args, **kwargs)

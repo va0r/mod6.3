@@ -1,13 +1,17 @@
+import random
+
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
+from blog.models import Note
 from mailing.forms import MailingSettingsForm, ClientForm, MessageForm
 from mailing.models import MailingSettings, Client, MailingMessage, Contact
 
 
 class StatisticsMixin:
-    def get_statistics_context(self):
+    @staticmethod
+    def get_statistics_context():
         context = {
             'count_mailings_all': MailingSettings.objects.all().count(),
             'count_mailings_active': MailingSettings.objects.filter(status=MailingSettings.STATUS_STARTED).count(),
@@ -22,7 +26,37 @@ class StatisticsMixin:
         return context
 
 
-class MailingSettingsListView(StatisticsMixin, ListView):
+class BlogMixin:
+    @staticmethod
+    def get_blog_context():
+        def select_random_notes():
+            # Обновляем случайные числа в столбце random_number для всех записей
+            for note in Note.objects.all():
+                note.random_number = random.random()
+                note.save()
+
+            # Выбираем случайные записи, исключая дубликаты
+            random_notes = Note.objects.filter(is_published=True).order_by('random_number')[:3]
+
+            return random_notes
+
+        selected_notes = select_random_notes()
+
+        context = {
+            'blog_1': selected_notes[0],
+            'blog_2': selected_notes[1],
+            'blog_3': selected_notes[2]
+        }
+        return context
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        blog_context = self.get_blog_context()
+        context.update(blog_context)
+        return context
+
+
+class MailingSettingsListView(BlogMixin, StatisticsMixin, ListView):
     model = MailingSettings
 
     def get_context_data(self, **kwargs):
@@ -44,72 +78,72 @@ def toggle__is_blocked(request, pk):
     return redirect('mailing:clients')
 
 
-class MailingSettingsCreateView(StatisticsMixin, CreateView):
+class MailingSettingsCreateView(BlogMixin, StatisticsMixin, CreateView):
     model = MailingSettings
     form_class = MailingSettingsForm
     success_url = reverse_lazy('mailing:mailing_list')
 
 
-class MailingSettingsUpdateView(StatisticsMixin, UpdateView):
+class MailingSettingsUpdateView(BlogMixin, StatisticsMixin, UpdateView):
     model = MailingSettings
     form_class = MailingSettingsForm
     success_url = reverse_lazy('mailing:mailing_list')
 
 
-class MailingSettingsDeleteView(StatisticsMixin, DeleteView):
+class MailingSettingsDeleteView(BlogMixin, StatisticsMixin, DeleteView):
     model = MailingSettings
     success_url = reverse_lazy('mailing:mailing_list')
 
 
-class ClientListView(StatisticsMixin, ListView):
+class ClientListView(BlogMixin, StatisticsMixin, ListView):
     model = Client
     extra_context = {
         'title': 'Список клиентов'
     }
 
 
-class ClientCreateView(StatisticsMixin, CreateView):
+class ClientCreateView(BlogMixin, StatisticsMixin, CreateView):
     model = Client
     form_class = ClientForm
     success_url = reverse_lazy('mailing:clients')
 
 
-class ClientUpdateView(StatisticsMixin, UpdateView):
+class ClientUpdateView(BlogMixin, StatisticsMixin, UpdateView):
     model = Client
     form_class = ClientForm
     success_url = reverse_lazy('mailing:clients')
 
 
-class ClientDeleteView(StatisticsMixin, DeleteView):
+class ClientDeleteView(BlogMixin, StatisticsMixin, DeleteView):
     model = Client
     success_url = reverse_lazy('mailing:clients')
 
 
-class MessageListView(StatisticsMixin, ListView):
+class MessageListView(BlogMixin, StatisticsMixin, ListView):
     model = MailingMessage
     extra_context = {
         'title': 'Список сообщений'
     }
 
 
-class MessageCreateView(StatisticsMixin, CreateView):
+class MessageCreateView(BlogMixin, StatisticsMixin, CreateView):
     model = MailingMessage
     form_class = MessageForm
     success_url = reverse_lazy('mailing:messages')
 
 
-class MessageUpdateView(StatisticsMixin, UpdateView):
+class MessageUpdateView(BlogMixin, StatisticsMixin, UpdateView):
     model = MailingMessage
     form_class = MessageForm
     success_url = reverse_lazy('mailing:messages')
 
 
-class MessageDeleteView(StatisticsMixin, DeleteView):
+class MessageDeleteView(BlogMixin, StatisticsMixin, DeleteView):
     model = MailingMessage
     success_url = reverse_lazy('mailing:messages')
 
 
-class ContactListView(StatisticsMixin, ListView):
+class ContactListView(BlogMixin, StatisticsMixin, ListView):
     model = Contact
 
     extra_context = {

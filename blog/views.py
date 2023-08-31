@@ -4,10 +4,10 @@ from pytils.translit import slugify
 
 from blog.forms import NoteForm
 from blog.models import Note
-from mailing.views import StatisticsMixin
+from mailing.views import StatisticsMixin, BlogMixin
 
 
-class NoteCreateView(StatisticsMixin, CreateView):
+class NoteCreateView(BlogMixin, StatisticsMixin, CreateView):
     model = Note
     form_class = NoteForm
     success_url = reverse_lazy('blog:READ_all')
@@ -25,7 +25,7 @@ class NoteCreateView(StatisticsMixin, CreateView):
         return super().form_valid(form)
 
 
-class NoteListView(StatisticsMixin, ListView):
+class NoteListView(BlogMixin, StatisticsMixin, ListView):
     model = Note
 
     extra_context = {
@@ -39,7 +39,7 @@ class NoteListView(StatisticsMixin, ListView):
         return queryset
 
 
-class NoteDetailView(StatisticsMixin, DetailView):
+class NoteDetailView(BlogMixin, StatisticsMixin, DetailView):
     model = Note
     form_class = NoteForm
 
@@ -58,7 +58,7 @@ class NoteDetailView(StatisticsMixin, DetailView):
         return self.object
 
 
-class NoteUpdateView(StatisticsMixin, UpdateView):
+class NoteUpdateView(BlogMixin, StatisticsMixin, UpdateView):
     model = Note
     form_class = NoteForm
 
@@ -78,6 +78,6 @@ class NoteUpdateView(StatisticsMixin, UpdateView):
         return reverse('blog:READ_one', args=[self.kwargs.get('pk')])
 
 
-class NoteDeleteView(StatisticsMixin, DeleteView):
+class NoteDeleteView(BlogMixin, StatisticsMixin, DeleteView):
     model = Note
     success_url = reverse_lazy('blog:READ_all')

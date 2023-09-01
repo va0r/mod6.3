@@ -2,6 +2,7 @@ import random
 
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
+from django.views.decorators.cache import cache_page
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 from blog.models import Note
@@ -56,7 +57,16 @@ class BlogMixin:
         return context
 
 
-class MailingSettingsListView(BlogMixin, StatisticsMixin, ListView):
+class CacheMixin:
+    cache_timeout = 60 * 15  # 15 минут
+
+    @classmethod
+    def as_view(cls, **kwargs):
+        view = super().as_view(**kwargs)
+        return cache_page(cls.cache_timeout)(view)
+
+
+class MailingSettingsListView(BlogMixin, StatisticsMixin, CacheMixin, ListView):
     model = MailingSettings
 
     def get_context_data(self, **kwargs):
@@ -95,7 +105,7 @@ class MailingSettingsDeleteView(BlogMixin, StatisticsMixin, DeleteView):
     success_url = reverse_lazy('mailing:mailing_list')
 
 
-class ClientListView(BlogMixin, StatisticsMixin, ListView):
+class ClientListView(BlogMixin, StatisticsMixin, CacheMixin, ListView):
     model = Client
     extra_context = {
         'title': 'Список клиентов'
@@ -119,7 +129,7 @@ class ClientDeleteView(BlogMixin, StatisticsMixin, DeleteView):
     success_url = reverse_lazy('mailing:clients')
 
 
-class MessageListView(BlogMixin, StatisticsMixin, ListView):
+class MessageListView(BlogMixin, StatisticsMixin, CacheMixin, ListView):
     model = MailingMessage
     extra_context = {
         'title': 'Список сообщений'
@@ -143,7 +153,7 @@ class MessageDeleteView(BlogMixin, StatisticsMixin, DeleteView):
     success_url = reverse_lazy('mailing:messages')
 
 
-class ContactListView(BlogMixin, StatisticsMixin, ListView):
+class ContactListView(BlogMixin, StatisticsMixin, CacheMixin, ListView):
     model = Contact
 
     extra_context = {

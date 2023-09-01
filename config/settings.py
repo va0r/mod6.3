@@ -56,6 +56,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'django.middleware.cache.UpdateCacheMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -165,3 +168,14 @@ if CACHE_ENABLED:
             "LOCATION": os.getenv('CACHE_LOCATION'),
         }
     }
+    # CACHE_TIMEOUT = 300
+    # CACHES = {
+    #     'default': {
+    #         'BACKEND': 'django_redis.cache.RedisCache',
+    #         'LOCATION': 'redis://127.0.0.1:6379/1',  # Укажите свой адрес и порт Redis
+    #         'OPTIONS': {
+    #             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+    #         }
+    #     }
+    # }
+

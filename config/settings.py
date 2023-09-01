@@ -168,14 +168,3 @@ if CACHE_ENABLED:
             "LOCATION": os.getenv('CACHE_LOCATION'),
         }
     }
-    # CACHE_TIMEOUT = 300
-    # CACHES = {
-    #     'default': {
-    #         'BACKEND': 'django_redis.cache.RedisCache',
-    #         'LOCATION': 'redis://127.0.0.1:6379/1',  # Укажите свой адрес и порт Redis
-    #         'OPTIONS': {
-    #             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-    #         }
-    #     }
-    # }
-

@@ -1,5 +1,6 @@
 import random
 
+from django.conf import settings
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.decorators.cache import cache_page
@@ -63,7 +64,10 @@ class CacheMixin:
     @classmethod
     def as_view(cls, **kwargs):
         view = super().as_view(**kwargs)
-        return cache_page(cls.cache_timeout)(view)
+        if settings.CACHE_ENABLED:
+            return cache_page(cls.cache_timeout)(view)
+        else:
+            return view
 
 
 class MailingSettingsListView(BlogMixin, StatisticsMixin, CacheMixin, ListView):

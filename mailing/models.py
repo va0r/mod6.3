@@ -26,6 +26,18 @@ def get_now_utc():
     return datetime.datetime.now().astimezone(datetime.timezone.utc)
 
 
+class ClientGroup(models.Model):
+    name = models.CharField(max_length=255, verbose_name='Название группы')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Группа клиентов'
+        verbose_name_plural = 'Группы клиентов'
+        ordering = ['pk']
+
+
 class Client(models.Model):
     email = models.EmailField(verbose_name='Почта для рассылки')
     first_name = models.CharField(**NULLABLE, verbose_name='Имя', max_length=150)
@@ -33,6 +45,8 @@ class Client(models.Model):
     comment = models.TextField(**NULLABLE, verbose_name='Комментарий')
     is_blocked = models.BooleanField(verbose_name='Заблокирован', default=False)
     domain = models.CharField(verbose_name='Домен', max_length=255, blank=True, editable=False)
+
+    groups = models.ManyToManyField(ClientGroup, related_name='clients', blank=True, verbose_name='Группы клиентов')
 
     def save(self, *args, **kwargs):
         # запись домена почты в объект "Клиент"
@@ -90,6 +104,8 @@ class MailingSettings(models.Model):
     period = models.CharField(max_length=20, choices=PERIODS, default=PERIOD_DAILY, verbose_name='Период')
     status = models.CharField(max_length=20, choices=STATUSES, default=STATUS_CREATED, verbose_name='Статус')
     message = models.ForeignKey('MailingMessage', on_delete=models.CASCADE, verbose_name='Сообщение', **NULLABLE)
+
+    groups = models.ManyToManyField(ClientGroup, related_name='mailing_settings', blank=True, verbose_name='Группы рассылок')
 
     def save(self, *args, **kwargs):
         # сохранение объекта

@@ -5,8 +5,8 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 from blog.models import Note
-from mailing.forms import MailingSettingsForm, ClientForm, MessageForm
-from mailing.models import MailingSettings, Client, MailingMessage, Contact
+from mailing.forms import MailingSettingsForm, ClientForm, MessageForm, ClientGroupForm
+from mailing.models import MailingSettings, Client, MailingMessage, Contact, ClientGroup
 
 
 class StatisticsMixin:
@@ -150,3 +150,27 @@ class ContactListView(BlogMixin, StatisticsMixin, ListView):
         'title': 'Email Рассылка',
         'description': 'Контакты'
     }
+
+
+class ClientGroupListView(BlogMixin, StatisticsMixin, ListView):
+    model = ClientGroup
+    extra_context = {
+        'title': 'Список групп клиентов'
+    }
+
+
+class ClientGroupCreateView(BlogMixin, StatisticsMixin, CreateView):
+    model = ClientGroup
+    form_class = ClientGroupForm
+    success_url = reverse_lazy('mailing:groups')
+
+
+class ClientGroupUpdateView(BlogMixin, StatisticsMixin, UpdateView):
+    model = ClientGroup
+    form_class = ClientGroupForm
+    success_url = reverse_lazy('mailing:groups')
+
+
+class ClientGroupDeleteView(BlogMixin, StatisticsMixin, DeleteView):
+    model = ClientGroup
+    success_url = reverse_lazy('mailing:groups')

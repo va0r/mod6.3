@@ -3,7 +3,8 @@ from django.urls import path
 from mailing.apps import MailingConfig
 from mailing.views import MailingSettingsCreateView, MailingSettingsUpdateView, ClientListView, \
     ClientCreateView, ClientUpdateView, ClientDeleteView, MailingSettingsDeleteView, MessageListView, MessageDeleteView, \
-    MessageUpdateView, MessageCreateView, MailingSettingsListView, toggle__is_blocked, ContactListView
+    MessageUpdateView, MessageCreateView, MailingSettingsListView, toggle__is_blocked, ContactListView, \
+    ClientGroupListView, ClientGroupCreateView, ClientGroupUpdateView, ClientGroupDeleteView
 
 app_name = MailingConfig.name
 
@@ -17,6 +18,11 @@ urlpatterns = [
     path('clients/create/', ClientCreateView.as_view(), name='clients_create'),
     path('clients/update/<int:pk>/', ClientUpdateView.as_view(), name='clients_update'),
     path('clients/delete/<int:pk>/', ClientDeleteView.as_view(), name='clients_delete'),
+
+    path('groups/', ClientGroupListView.as_view(), name='groups'),
+    path('groups/create/', ClientGroupCreateView.as_view(), name='groups_create'),
+    path('groups/update/<int:pk>/', ClientGroupUpdateView.as_view(), name='groups_update'),
+    path('groups/delete/<int:pk>/', ClientGroupDeleteView.as_view(), name='groups_delete'),
 
     path('clients/toggle/<int:pk>/', toggle__is_blocked, name='client__is_blocked_toggle'),
 

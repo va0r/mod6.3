@@ -11,3 +11,4 @@ env
 /staticfiles/
 .vscode/
 flake8_results.txt
+/__old__

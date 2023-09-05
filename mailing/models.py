@@ -66,27 +66,9 @@ class Client(models.Model):
     def save(self, *args, **kwargs):
         # запись домена почты в объект "Клиент"
         self.domain = self.email.split('@')[-1]
+
         # сохранение объекта
         super(Client, self).save(*args, **kwargs)
-
-        # # отправка рассылок объекту
-        # if not self.is_blocked:
-        #     now_utc = get_now_utc()
-        #     for ms in MailingSettings.objects.filter(status=MailingSettings.STATUS_STARTED):
-        #         ml = MailingLog.objects.filter(client=self.id, settings=ms)
-        #         if ml.exists():
-        #             last_try_date_utc = ml.order_by('-last_try').first().last_try.astimezone(datetime.timezone.utc)
-        #             if ms.period == MailingSettings.PERIOD_DAILY:
-        #                 if (now_utc - last_try_date_utc).days >= 1:
-        #                     send_email_one(ms, self)
-        #             elif ms.period == MailingSettings.PERIOD_WEEKLY:
-        #                 if (now_utc - last_try_date_utc).days >= 7:
-        #                     send_email_one(ms, self)
-        #             elif ms.period == MailingSettings.PERIOD_MONTHLY:
-        #                 if (now_utc - last_try_date_utc).days >= 30:
-        #                     send_email_one(ms, self)
-        #         else:
-        #             send_email_one(ms, self)
 
     def __str__(self):
         return f'{self.first_name} {self.last_name} ({self.email})'

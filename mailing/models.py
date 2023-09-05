@@ -48,29 +48,45 @@ class Client(models.Model):
 
     groups = models.ManyToManyField(ClientGroup, related_name='clients', blank=True, verbose_name='Группы клиентов')
 
+    def form_valid(self, form):
+        # Создайте объект Client, но пока не сохраняйте его в базе данных
+        client = form.save(commit=False)
+
+        # Сохраните объект Client в базе данных
+        client.save()
+
+        # Если в форме были выбраны группы клиентов, добавьте их к объекту Client
+        groups = form.cleaned_data['groups']
+        for group in groups:
+            client.groups.add(group)
+
+        # Верните успешное перенаправление
+        return super().form_valid(form)
+
     def save(self, *args, **kwargs):
         # запись домена почты в объект "Клиент"
         self.domain = self.email.split('@')[-1]
         # сохранение объекта
         super(Client, self).save(*args, **kwargs)
-        # отправка рассылок объекту
-        if not self.is_blocked:
-            now_utc = get_now_utc()
-            for ms in MailingSettings.objects.filter(status=MailingSettings.STATUS_STARTED):
-                ml = MailingLog.objects.filter(client=self.id, settings=ms)
-                if ml.exists():
-                    last_try_date_utc = ml.order_by('-last_try').first().last_try.astimezone(datetime.timezone.utc)
-                    if ms.period == MailingSettings.PERIOD_DAILY:
-                        if (now_utc - last_try_date_utc).days >= 1:
-                            send_email_one(ms, self)
-                    elif ms.period == MailingSettings.PERIOD_WEEKLY:
-                        if (now_utc - last_try_date_utc).days >= 7:
-                            send_email_one(ms, self)
-                    elif ms.period == MailingSettings.PERIOD_MONTHLY:
-                        if (now_utc - last_try_date_utc).days >= 30:
-                            send_email_one(ms, self)
-                else:
-                    send_email_one(ms, self)
+
+        # # отправка рассылок объекту
+        # if not self.is_blocked:
+        #     now_utc = get_now_utc()
+        #     for ms in MailingSettings.objects.filter(status=MailingSettings.STATUS_STARTED):
+        #         ml = MailingLog.objects.filter(client=self.id, settings=ms)
+        #         if ml.exists():
+        #             last_try_date_utc = ml.order_by('-last_try').first().last_try.astimezone(datetime.timezone.utc)
+        #             if ms.period == MailingSettings.PERIOD_DAILY:
+        #                 if (now_utc - last_try_date_utc).days >= 1:
+        #                     send_email_one(ms, self)
+        #             elif ms.period == MailingSettings.PERIOD_WEEKLY:
+        #                 if (now_utc - last_try_date_utc).days >= 7:
+        #                     send_email_one(ms, self)
+        #             elif ms.period == MailingSettings.PERIOD_MONTHLY:
+        #                 if (now_utc - last_try_date_utc).days >= 30:
+        #                     send_email_one(ms, self)
+        #         else:
+        #             send_email_one(ms, self)
 
     def __str__(self):
         return f'{self.first_name} {self.last_name} ({self.email})'
@@ -105,29 +121,45 @@ class MailingSettings(models.Model):
     status = models.CharField(max_length=20, choices=STATUSES, default=STATUS_CREATED, verbose_name='Статус')
     message = models.ForeignKey('MailingMessage', on_delete=models.CASCADE, verbose_name='Сообщение', **NULLABLE)
 
-    groups = models.ManyToManyField(ClientGroup, related_name='mailing_settings', blank=True, verbose_name='Группы рассылок')
+    groups = models.ManyToManyField('ClientGroup', related_name='mailing_settings', blank=True,
+                                    verbose_name='Группы рассылок')
+
+    def form_valid(self, form):
+        # Создайте объект MailingSettings, но пока не сохраняйте его в базе данных
+        mailing_settings = form.save(commit=False)
+
+        # Сохраните объект MailingSettings в базе данных
+        mailing_settings.save()
+
+        # Если в форме были выбраны группы, добавьте их к объекту MailingSettings
+        groups = form.cleaned_data['groups']
+        for group in groups:
+            mailing_settings.groups.add(group)
+
+        # Верните успешное перенаправление
+        return super().form_valid(form)
 
     def save(self, *args, **kwargs):
         # сохранение объекта
         super(MailingSettings, self).save(*args, **kwargs)
-        # отправка рассылки объектам
-        if self.status == 'started':
-            now_utc = get_now_utc()
-            for mc in Client.objects.filter(is_blocked=False):
-                ml = MailingLog.objects.filter(client=mc.id, settings=self)
-                if ml.exists():
-                    last_try_date_utc = ml.order_by('-last_try').first().last_try.astimezone(datetime.timezone.utc)
-                    if self.period == MailingSettings.PERIOD_DAILY:
-                        if (now_utc - last_try_date_utc).days >= 1:
-                            send_email_one(self, mc)
-                    elif self.period == MailingSettings.PERIOD_WEEKLY:
-                        if (now_utc - last_try_date_utc).days >= 7:
-                            send_email_one(self, mc)
-                    elif self.period == MailingSettings.PERIOD_MONTHLY:
-                        if (now_utc - last_try_date_utc).days >= 30:
-                            send_email_one(self, mc)
-                else:
-                    send_email_one(self, mc)
+        # # отправка рассылки объектам
+        # if self.status == 'started':
+        #     now_utc = get_now_utc()
+        #     for mc in Client.objects.filter(is_blocked=False):
+        #         ml = MailingLog.objects.filter(client=mc.id, settings=self)
+        #         if ml.exists():
+        #             last_try_date_utc = ml.order_by('-last_try').first().last_try.astimezone(datetime.timezone.utc)
+        #             if self.period == MailingSettings.PERIOD_DAILY:
+        #                 if (now_utc - last_try_date_utc).days >= 1:
+        #                     send_email_one(self, mc)
+        #             elif self.period == MailingSettings.PERIOD_WEEKLY:
+        #                 if (now_utc - last_try_date_utc).days >= 7:
+        #                     send_email_one(self, mc)
+        #             elif self.period == MailingSettings.PERIOD_MONTHLY:
+        #                 if (now_utc - last_try_date_utc).days >= 30:
+        #                     send_email_one(self, mc)
+        #         else:
+        #             send_email_one(self, mc)
 
     def __str__(self):
         return f'{self.time} / {self.period}'

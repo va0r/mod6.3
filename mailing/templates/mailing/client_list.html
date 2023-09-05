@@ -41,7 +41,16 @@
 									<td>Заблокирован</td>
 									<td>{{ item.is_blocked }}</td>
 								</tr>
-
+								<tr>
+									<td>Группа</td>
+									<td>
+											{% for group in item.groups.all %}
+												{{ group.name }}{% if not forloop.last %},<br> {% endif %}
+											{% empty %}
+												Нет групп
+											{% endfor %}
+									</td>
+								</tr>
 							</table>
 						</div>
 						<div class="card-footer">

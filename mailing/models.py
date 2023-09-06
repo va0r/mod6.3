@@ -90,24 +90,6 @@ class MailingSettings(models.Model):
 
     def save(self, *args, **kwargs):
         super(MailingSettings, self).save(*args, **kwargs)
-        # # отправка рассылки объектам
-        # if self.status == 'started':
-        #     now_utc = get_now_utc()
-        #     for mc in Client.objects.filter(is_blocked=False):
-        #         ml = MailingLog.objects.filter(client=mc.id, settings=self)
-        #         if ml.exists():
-        #             last_try_date_utc = ml.order_by('-last_try').first().last_try.astimezone(datetime.timezone.utc)
-        #             if self.period == MailingSettings.PERIOD_DAILY:
-        #                 if (now_utc - last_try_date_utc).days >= 1:
-        #                     send_email_one(self, mc)
-        #             elif self.period == MailingSettings.PERIOD_WEEKLY:
-        #                 if (now_utc - last_try_date_utc).days >= 7:
-        #                     send_email_one(self, mc)
-        #             elif self.period == MailingSettings.PERIOD_MONTHLY:
-        #                 if (now_utc - last_try_date_utc).days >= 30:
-        #                     send_email_one(self, mc)
-        #         else:
-        #             send_email_one(self, mc)
 
     def __str__(self):
         return f'{self.time} / {self.period}'

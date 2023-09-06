@@ -144,9 +144,9 @@ SILENCED_SYSTEM_CHECKS = ["templates.E003"]
 
 # Модель аутентификации пользователя и редиректы
 AUTH_USER_MODEL = 'users.User'
-# LOGIN_REDIRECT_URL = '/'
-# LOGOUT_REDIRECT_URL = '/'
-# LOGIN_URL = '/users/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+LOGIN_URL = '/users/'
 
 # Данные для отправки писем
 EMAIL_HOST = os.getenv('EMAIL_HOST')

@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 import os
 from pathlib import Path
 
+from celery.schedules import crontab
 from dotenv import load_dotenv, find_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -152,9 +153,20 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL') == 'True'
 EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS') == 'True'
 
-CRONJOBS = [
-    ('*/5 * * * *', 'mailing.services.send_mail_all')
-]
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+
+# Настройки для Celery Beat (планировщика)
+CELERY_BEAT_SCHEDULE = {
+    'send-mail-every-day': {
+        'task': 'mailing.tasks.send_mail_task',  # Путь к задаче в вашем приложении
+        # 'schedule': crontab(minute=0, hour=0),  # Здесь можно настроить расписание для рассылки
+    },
+}
+
+# Другие настройки
+
 
 # Кеш
 CACHE_ENABLED = os.getenv('CACHE_ENABLED') == 'True'

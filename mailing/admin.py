@@ -27,6 +27,7 @@ class MailingMessageAdmin(admin.ModelAdmin):
 class MailingLogAdmin(admin.ModelAdmin):
     list_display = ('client', 'settings', 'status', 'last_try',)
     list_filter = ('status', 'last_try',)
+    ordering = ['-last_try']
 
 
 @admin.register(ClientGroup)

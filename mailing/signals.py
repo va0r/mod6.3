@@ -21,12 +21,21 @@ def send_welcome_email(sender, instance, created, **kwargs):
 
 @receiver(m2m_changed, sender=Client.groups.through)
 def client_groups_changed(sender, instance, action, **kwargs):
-    if not instance.is_blocked:
-        groups_list = []
-        if action == 'post_add':
-            groups_list = instance.groups.all()
-        elif action == 'post_remove':
-            groups_list = instance.groups.all()
+    groups_list = []
+    is_blocked__content = True
+    if action == 'post_add':
+        groups_list = instance.groups.all()
+        is_blocked__content = instance.is_blocked
+    elif action == 'post_remove':
+        groups_list = instance.groups.all()
+        is_blocked__content = instance.is_blocked
+
+    conditions = [
+        len(groups_list) > 0,
+        not is_blocked__content
+    ]
+
+    if all(conditions):
         now_utc = get_now_utc()
         for group in groups_list:
             for ms in MailingSettings.objects.filter(groups=group, status=MailingSettings.STATUS_STARTED):
@@ -48,12 +57,25 @@ def client_groups_changed(sender, instance, action, **kwargs):
 
 @receiver(m2m_changed, sender=MailingSettings.groups.through)
 def mailing_settings_groups_changed(sender, instance, action, **kwargs):
-    if instance.status == 'started':
-        groups_list = []
-        if action == 'post_add':
-            groups_list = instance.groups.all()
-        elif action == 'post_remove':
-            groups_list = instance.groups.all()
+    groups_list = []
+    message_content = ''
+    status_content = ''
+    if action == 'post_add':
+        groups_list = instance.groups.all()
+        message_content = instance.message
+        status_content = instance.status
+    elif action == 'post_remove':
+        groups_list = instance.groups.all()
+        message_content = instance.message
+        status_content = instance.status
+
+    conditions = [
+        len(groups_list) > 0,
+        message_content is not None,
+        status_content == 'started'
+    ]
+
+    if all(conditions):
         now_utc = get_now_utc()
         for group in groups_list:
             group_object = ClientGroup.objects.get(name=group)

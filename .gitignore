@@ -12,3 +12,4 @@ env
 .vscode/
 flake8_results.txt
 /__old__
+/celerybeat-schedule

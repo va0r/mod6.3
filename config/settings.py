@@ -16,6 +16,9 @@ from pathlib import Path
 from celery.schedules import crontab
 from dotenv import load_dotenv, find_dotenv
 
+# Импортируйте файл конфигурации журналирования
+import logging_config
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -42,7 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'django_crontab',
+    'celery',
 
     'mailing',
     'users',
@@ -153,7 +156,7 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL') == 'True'
 EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS') == 'True'
 
-
+# Celery configuration
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 
@@ -161,7 +164,7 @@ CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 CELERY_BEAT_SCHEDULE = {
     'send-mail-every-day': {
         'task': 'mailing.tasks.send_mail_task',  # Путь к задаче в вашем приложении
-        # 'schedule': crontab(minute=0, hour=0),  # Здесь можно настроить расписание для рассылки
+        'schedule': crontab(minute=40, hour=22),  # Здесь можно настроить расписание для рассылки
     },
 }
 

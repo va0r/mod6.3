@@ -153,7 +153,7 @@ EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL') == 'True'
 EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS') == 'True'
 
 CRONJOBS = [
-    ('*/5 * * * *', 'mailing.services.send_mails')
+    ('*/5 * * * *', 'mailing.services.send_mail_all')
 ]
 
 # Кеш

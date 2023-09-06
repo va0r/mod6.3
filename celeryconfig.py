@@ -9,6 +9,9 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 
 app = Celery('skychimp')
 
+# Указываем, что нужно включить повторное подключение к брокеру при запуске
+broker_connection_retry_on_startup = True
+
 # Загрузите настройки Celery из объекта settings.py вашего Django проекта
 app.config_from_object('django.conf:settings', namespace='CELERY')
 

@@ -8,4 +8,4 @@ logging.basicConfig(level=logging.INFO, format=log_format)
 
 # Подключитесь к журналу Celery
 celery_logger = logging.getLogger('celery')
-celery_logger.setLevel(logging.WARNING)
+celery_logger.setLevel(logging.INFO)

@@ -1,29 +1,6 @@
-import datetime
-
-from django.conf import settings
-from django.core.mail import send_mail
 from django.db import models
 
 NULLABLE = {'blank': True, 'null': True}
-
-
-def send_email_one(ms, mc):
-    result = send_mail(
-        subject=ms.message.subject,
-        message=ms.message.message,
-        from_email=settings.EMAIL_HOST_USER,
-        recipient_list=[mc.email],
-        fail_silently=False
-    )
-    MailingLog.objects.create(
-        status=MailingLog.STATUS_OK if result else MailingLog.STATUS_FAILED,
-        settings=ms,
-        client=mc
-    )
-
-
-def get_now_utc():
-    return datetime.datetime.now().astimezone(datetime.timezone.utc)
 
 
 class ClientGroup(models.Model):
@@ -46,7 +23,8 @@ class Client(models.Model):
     is_blocked = models.BooleanField(verbose_name='Заблокирован', default=False)
     domain = models.CharField(verbose_name='Домен', max_length=255, blank=True, editable=False)
 
-    groups = models.ManyToManyField(ClientGroup, related_name='clients', blank=True, verbose_name='Группы клиентов', default=None)
+    groups = models.ManyToManyField(ClientGroup, related_name='clients', blank=True, verbose_name='Группы клиентов',
+                                    default=None)
 
     def save(self, *args, **kwargs):
         self.domain = self.email.split('@')[-1]

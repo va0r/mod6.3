@@ -6,7 +6,26 @@ from django.db.models.signals import m2m_changed
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from mailing.models import Client, MailingSettings, get_now_utc, MailingLog, send_email_one, ClientGroup
+from mailing.models import Client, MailingSettings, MailingLog, ClientGroup
+
+
+def send_email_one(ms, mc):
+    result = send_mail(
+        subject=ms.message.subject,
+        message=ms.message.message,
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=[mc.email],
+        fail_silently=False
+    )
+    MailingLog.objects.create(
+        status=MailingLog.STATUS_OK if result else MailingLog.STATUS_FAILED,
+        settings=ms,
+        client=mc
+    )
+
+
+def get_now_utc():
+    return datetime.datetime.now().astimezone(datetime.timezone.utc)
 
 
 @receiver(post_save, sender=Client)

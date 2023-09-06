@@ -56,8 +56,8 @@ def mailing_settings_groups_changed(sender, instance, action, **kwargs):
             groups_list = instance.groups.all()
         now_utc = get_now_utc()
         for group in groups_list:
-            group_objects = ClientGroup.objects.get(name=group)
-            clients_in_group = Client.objects.filter(groups=group_objects)
+            group_object = ClientGroup.objects.get(name=group)
+            clients_in_group = Client.objects.filter(groups=group_object)
             if not clients_in_group.exists():
                 return
             for mc in clients_in_group:

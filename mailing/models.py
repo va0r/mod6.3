@@ -46,28 +46,10 @@ class Client(models.Model):
     is_blocked = models.BooleanField(verbose_name='Заблокирован', default=False)
     domain = models.CharField(verbose_name='Домен', max_length=255, blank=True, editable=False)
 
-    groups = models.ManyToManyField(ClientGroup, related_name='clients', blank=True, verbose_name='Группы клиентов')
-
-    def form_valid(self, form):
-        # Создайте объект Client, но пока не сохраняйте его в базе данных
-        client = form.save(commit=False)
-
-        # Сохраните объект Client в базе данных
-        client.save()
-
-        # Если в форме были выбраны группы клиентов, добавьте их к объекту Client
-        groups = form.cleaned_data['groups']
-        for group in groups:
-            client.groups.add(group)
-
-        # Верните успешное перенаправление
-        return super().form_valid(form)
+    groups = models.ManyToManyField(ClientGroup, related_name='clients', blank=True, verbose_name='Группы клиентов', default=None)
 
     def save(self, *args, **kwargs):
-        # запись домена почты в объект "Клиент"
         self.domain = self.email.split('@')[-1]
-
-        # сохранение объекта
         super(Client, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -106,23 +88,7 @@ class MailingSettings(models.Model):
     groups = models.ManyToManyField('ClientGroup', related_name='mailing_settings', blank=True,
                                     verbose_name='Группы рассылок')
 
-    def form_valid(self, form):
-        # Создайте объект MailingSettings, но пока не сохраняйте его в базе данных
-        mailing_settings = form.save(commit=False)
-
-        # Сохраните объект MailingSettings в базе данных
-        mailing_settings.save()
-
-        # Если в форме были выбраны группы, добавьте их к объекту MailingSettings
-        groups = form.cleaned_data['groups']
-        for group in groups:
-            mailing_settings.groups.add(group)
-
-        # Верните успешное перенаправление
-        return super().form_valid(form)
-
     def save(self, *args, **kwargs):
-        # сохранение объекта
         super(MailingSettings, self).save(*args, **kwargs)
         # # отправка рассылки объектам
         # if self.status == 'started':

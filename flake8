@@ -1,0 +1,1 @@
+❯ flake8 --exclude=venv,migrations --ignore=E501,F401 ./

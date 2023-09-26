@@ -27,7 +27,7 @@ class RegisterView(BlogMixin, StatisticsMixin, CreateView):
         'title': 'Регистрация',
         'description': 'Регистрация нового пользователя'
     }
-    success_url = reverse_lazy('users:login')
+    success_url = reverse_lazy('mailing:mailing_list')
 
     def form_valid(self, form):
         new_user = form.save()

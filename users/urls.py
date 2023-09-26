@@ -3,7 +3,6 @@ from django.urls import path
 
 from users.apps import UsersConfig
 from users.views import CustomLoginView, RegisterView, ProfileView, generate_new_password, activate_user
-
 app_name = UsersConfig.name
 
 urlpatterns = [

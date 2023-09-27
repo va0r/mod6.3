@@ -5,4 +5,4 @@ from mailing.services import send_mail_all
 
 @shared_task
 def send_mail_task():
-    send_mail_all()  # Вызывайте вашу функцию рассылки здесь
+    send_mail_all()

@@ -1,5 +1,8 @@
 import random
 
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
@@ -56,7 +59,24 @@ class BlogMixin:
         return context
 
 
-class MailingSettingsListView(BlogMixin, StatisticsMixin, ListView):
+class AccessCheckMixin:
+    def get_object(self, queryset=None):
+        self.object = super().get_object(queryset)
+        if self.object.owner != self.request.user and not self.request.user.is_staff:
+            raise Http404
+        return self.object
+
+
+class QuerysetMixin:
+    model = None
+
+    def get_queryset(self):
+        if self.model is None:
+            raise ValueError("The 'model' attribute must be defined in the subclass.")
+        return self.model.objects.filter(owner=self.request.user)
+
+
+class MailingSettingsListView(LoginRequiredMixin, BlogMixin, StatisticsMixin, QuerysetMixin, ListView):
     model = MailingSettings
 
     def get_context_data(self, **kwargs):
@@ -66,6 +86,7 @@ class MailingSettingsListView(BlogMixin, StatisticsMixin, ListView):
         return context_data
 
 
+@login_required
 def toggle__is_blocked(request, pk):
     client = get_object_or_404(Client, pk=pk)
 
@@ -78,69 +99,147 @@ def toggle__is_blocked(request, pk):
     return redirect('mailing:clients')
 
 
-class MailingSettingsCreateView(BlogMixin, StatisticsMixin, CreateView):
+class MailingSettingsCreateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, CreateView):
     model = MailingSettings
     form_class = MailingSettingsForm
     success_url = reverse_lazy('mailing:mailing_list')
 
+    extra_context = {
+        'title': 'Email Рассылка',
+        'description': 'Добавление настроек рассылки'
+    }
 
-class MailingSettingsUpdateView(BlogMixin, StatisticsMixin, UpdateView):
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.owner = self.request.user
+        self.object.save()
+        return super().form_valid(form)
+
+
+class MailingSettingsUpdateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, AccessCheckMixin, UpdateView):
     model = MailingSettings
     form_class = MailingSettingsForm
     success_url = reverse_lazy('mailing:mailing_list')
 
+    extra_context = {
+        'title': 'Email Рассылка',
+        'description': 'Изменение настроек рассылки'
+    }
 
-class MailingSettingsDeleteView(BlogMixin, StatisticsMixin, DeleteView):
+
+class MailingSettingsDeleteView(LoginRequiredMixin, BlogMixin, StatisticsMixin, AccessCheckMixin, DeleteView):
     model = MailingSettings
     success_url = reverse_lazy('mailing:mailing_list')
 
-
-class ClientListView(BlogMixin, StatisticsMixin, ListView):
-    model = Client
     extra_context = {
-        'title': 'Список клиентов'
+        'title': 'Email Рассылка',
+        'description': 'Удаление настроек рассылки'
     }
 
 
-class ClientCreateView(BlogMixin, StatisticsMixin, CreateView):
+class ClientListView(LoginRequiredMixin, BlogMixin, StatisticsMixin, ListView):
+    model = Client
+    extra_context = {
+        'title': 'Email Рассылка',
+        'description': 'Список клиентов'
+    }
+
+
+class ClientCreateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, CreateView):
     model = Client
     form_class = ClientForm
     success_url = reverse_lazy('mailing:clients')
 
+    extra_context = {
+        'title': 'Email Рассылка',
+        'description': 'Добавление клиента рассылки'
+    }
 
-class ClientUpdateView(BlogMixin, StatisticsMixin, UpdateView):
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.owner = self.request.user
+        self.object.save()
+        return super().form_valid(form)
+
+
+class ClientUpdateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, UpdateView):
     model = Client
     form_class = ClientForm
     success_url = reverse_lazy('mailing:clients')
 
+    extra_context = {
+        'title': 'Email Рассылка',
+        'description': 'Изменение клиента рассылки'
+    }
 
-class ClientDeleteView(BlogMixin, StatisticsMixin, DeleteView):
+    def get_object(self, queryset=None):
+        self.object = super().get_object(queryset)
+        if self.object.owner != self.request.user and not self.request.user.is_staff:
+            raise Http404
+        return self.object
+
+
+class ClientDeleteView(LoginRequiredMixin, BlogMixin, StatisticsMixin, DeleteView):
     model = Client
     success_url = reverse_lazy('mailing:clients')
 
-
-class MessageListView(BlogMixin, StatisticsMixin, ListView):
-    model = MailingMessage
     extra_context = {
-        'title': 'Список сообщений'
+        'title': 'Email Рассылка',
+        'description': 'Удаление клиента рассылки'
     }
 
 
-class MessageCreateView(BlogMixin, StatisticsMixin, CreateView):
+class MessageListView(LoginRequiredMixin, BlogMixin, StatisticsMixin, ListView):
+    model = MailingMessage
+
+    extra_context = {
+        'title': 'Email Рассылка',
+        'description': 'Список сообщений'
+    }
+
+
+class MessageCreateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, CreateView):
     model = MailingMessage
     form_class = MessageForm
     success_url = reverse_lazy('mailing:messages')
 
+    extra_context = {
+        'title': 'Email Рассылка',
+        'description': 'Добавление сообщения для рассылки'
+    }
 
-class MessageUpdateView(BlogMixin, StatisticsMixin, UpdateView):
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.owner = self.request.user
+        self.object.save()
+        return super().form_valid(form)
+
+
+class MessageUpdateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, UpdateView):
     model = MailingMessage
     form_class = MessageForm
     success_url = reverse_lazy('mailing:messages')
 
+    extra_context = {
+        'title': 'Email Рассылка',
+        'description': 'Изменение сообщения для рассылки'
+    }
 
-class MessageDeleteView(BlogMixin, StatisticsMixin, DeleteView):
+    def get_object(self, queryset=None):
+        self.object = super().get_object(queryset)
+        if self.object.owner != self.request.user and not self.request.user.is_staff:
+            raise Http404
+        return self.object
+
+
+class MessageDeleteView(LoginRequiredMixin, BlogMixin, StatisticsMixin, DeleteView):
     model = MailingMessage
     success_url = reverse_lazy('mailing:messages')
+
+    extra_context = {
+        'title': 'Email Рассылка',
+        'description': 'Удаление сообщения для рассылки'
+    }
 
 
 class ContactListView(BlogMixin, StatisticsMixin, ListView):
@@ -152,25 +251,53 @@ class ContactListView(BlogMixin, StatisticsMixin, ListView):
     }
 
 
-class ClientGroupListView(BlogMixin, StatisticsMixin, ListView):
+class ClientGroupListView(LoginRequiredMixin, BlogMixin, StatisticsMixin, ListView):
     model = ClientGroup
     extra_context = {
-        'title': 'Список групп клиентов'
+        'title': 'Email Рассылка',
+        'description': 'Список групп клиентов'
     }
 
 
-class ClientGroupCreateView(BlogMixin, StatisticsMixin, CreateView):
+class ClientGroupCreateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, CreateView):
     model = ClientGroup
     form_class = ClientGroupForm
     success_url = reverse_lazy('mailing:groups')
 
+    extra_context = {
+        'title': 'Email Рассылка',
+        'description': 'Добавление списка групп клиентов'
+    }
 
-class ClientGroupUpdateView(BlogMixin, StatisticsMixin, UpdateView):
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.owner = self.request.user
+        self.object.save()
+        return super().form_valid(form)
+
+
+class ClientGroupUpdateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, UpdateView):
     model = ClientGroup
     form_class = ClientGroupForm
     success_url = reverse_lazy('mailing:groups')
 
+    extra_context = {
+        'title': 'Email Рассылка',
+        'description': 'Изменение списка групп клиентов'
+    }
 
-class ClientGroupDeleteView(BlogMixin, StatisticsMixin, DeleteView):
+    def get_object(self, queryset=None):
+        self.object = super().get_object(queryset)
+        if self.object.owner != self.request.user and not self.request.user.is_staff:
+            raise Http404
+        return self.object
+
+
+class ClientGroupDeleteView(LoginRequiredMixin, BlogMixin, StatisticsMixin, DeleteView):
     model = ClientGroup
     success_url = reverse_lazy('mailing:groups')
+
+    extra_context = {
+        'title': 'Email Рассылка',
+        'description': 'Удаление списка групп клиентов'
+    }

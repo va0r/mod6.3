@@ -1,5 +1,7 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.core.mail import send_mail
 from django.shortcuts import redirect, render
@@ -41,7 +43,7 @@ class RegisterView(BlogMixin, StatisticsMixin, CreateView):
         return super().form_valid(form)
 
 
-class ProfileView(BlogMixin, StatisticsMixin, UpdateView):
+class ProfileView(LoginRequiredMixin, BlogMixin, StatisticsMixin, UpdateView):
     model = User
     form_class = UserProfileForm
     success_url = reverse_lazy('users:profile')
@@ -54,6 +56,7 @@ class ProfileView(BlogMixin, StatisticsMixin, UpdateView):
         return self.request.user
 
 
+@login_required
 def generate_new_password(request):
     def generate_alphanum_crypt_string(length):
         import secrets
@@ -84,11 +87,9 @@ def activate_user(request, pk):
     user_for_activate.is_active = True
     user_for_activate.save()
 
-    # Используйте миксины для получения контекста
     statistics_context = StatisticsMixin.get_statistics_context()
     blog_context = BlogMixin.get_blog_context()
 
-    # Объедините контекст из всех миксинов
     context = {
         **statistics_context,
         **blog_context,

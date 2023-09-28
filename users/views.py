@@ -6,6 +6,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, UpdateView
 
+from mailing.forms import StyleFormMixin
 from mailing.views import BlogMixin, StatisticsMixin
 from users.forms import UserRegisterForm, UserProfileForm
 from users.models import User

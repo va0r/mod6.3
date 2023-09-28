@@ -1,10 +1,15 @@
 from django import forms
 from django.conf import settings
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm, AuthenticationForm
 from django.core.mail import send_mail
 
 from mailing.forms import StyleFormMixin
 from users.models import User
+
+
+class StyledAuthenticationForm(StyleFormMixin, AuthenticationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
 
 class UserRegisterForm(StyleFormMixin, UserCreationForm):

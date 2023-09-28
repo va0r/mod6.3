@@ -7,11 +7,12 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, UpdateView
 
 from mailing.views import BlogMixin, StatisticsMixin
-from users.forms import UserRegisterForm, UserProfileForm
+from users.forms import UserRegisterForm, UserProfileForm, StyledAuthenticationForm
 from users.models import User
 
 
 class CustomLoginView(BlogMixin, StatisticsMixin, LoginView):
+    authentication_form = StyledAuthenticationForm
     template_name = 'users/login.html'
     extra_context = {
         'title': 'Вход',

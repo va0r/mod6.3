@@ -3,18 +3,8 @@ from django.conf import settings
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.core.mail import send_mail
 
+from mailing.forms import StyleFormMixin
 from users.models import User
-
-
-class StyleFormMixin:
-    def __init__(self, *args, **kwargs):
-        """
-        Стилизация формы
-        """
-
-        super().__init__(*args, **kwargs)
-        for field_name, field in self.fields.items():
-            field.widget.attrs['class'] = 'form-control'
 
 
 class UserRegisterForm(StyleFormMixin, UserCreationForm):

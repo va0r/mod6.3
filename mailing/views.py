@@ -2,7 +2,7 @@ import random
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import Http404
+from django.http import Http404, request
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
@@ -14,17 +14,23 @@ from mailing.models import MailingSettings, Client, MailingMessage, Contact, Cli
 
 class StatisticsMixin:
     @staticmethod
-    def get_statistics_context():
+    def get_statistics_context(user):
         context = {
-            'count_mailings_all': MailingSettings.objects.all().count(),
-            'count_mailings_active': MailingSettings.objects.filter(status=MailingSettings.STATUS_STARTED).count(),
-            'count_clients': Client.objects.distinct().count(),
+            'count_mailings_all': MailingSettings.objects.filter(owner=user).count(),
+            'count_mailings_active': MailingSettings.objects.filter(owner=user, status=MailingSettings.STATUS_STARTED).count(),
+            'count_clients': Client.objects.filter(owner=user).distinct().count(),
         }
         return context
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        statistics_context = self.get_statistics_context()
+        user = self.request.user
+
+        if user.is_authenticated:
+            statistics_context = self.get_statistics_context(user)
+        else:
+            statistics_context = self.get_statistics_context(None)
+
         context.update(statistics_context)
         return context
 

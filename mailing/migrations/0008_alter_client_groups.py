@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('mailing', '0007_clientgroup_client_groups_mailingsettings_groups'),
     ]
@@ -13,6 +12,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='client',
             name='groups',
-            field=models.ManyToManyField(blank=True, default=None, related_name='clients', to='mailing.clientgroup', verbose_name='Группы клиентов'),
+            field=models.ManyToManyField(blank=True, default=None, related_name='clients', to='mailing.clientgroup',
+                                         verbose_name='Группы клиентов'),
         ),
     ]

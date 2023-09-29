@@ -7,4 +7,4 @@ class MailingConfig(AppConfig):
     verbose_name = 'Рассылка'
 
     def ready(self):
-        import mailing.signals
+        pass

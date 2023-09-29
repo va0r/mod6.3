@@ -150,6 +150,7 @@ class ClientDeleteView(BlogMixin, StatisticsMixin, DeleteView):
         'description': 'Удаление клиента рассылки'
     }
 
+
 class MessageListView(BlogMixin, StatisticsMixin, ListView):
     model = MailingMessage
     extra_context = {

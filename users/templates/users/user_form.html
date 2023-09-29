@@ -1,24 +1,23 @@
 {% extends 'mailing/base.html' %}
 
 {% block content %}
-	<form enctype="multipart/form-data" method="post" class="row">
-		<div class="col-9">
-			<div class="card">
-				<div class="card-header">
-					<h3 class="card-title" align="center">
-						Профиль
-					</h3>
-				</div>
-				<div class="card-body">
-					{% csrf_token %}
-					{{ form.as_p }}
-					<button class="btn btn-success" type="submit">Сохранить</button>
-					<a class="btn btn-danger" href="{% url 'users:generate_new_password' %}" role="button">Сгенерировать пароль</a>
-				</div>
-				<div class="card-footer">
-					<a class="btn btn-sm btn-outline-secondary" href="javascript:history.back()"
-					   type="button">Вернуться</a>
-				</div>
+	<form enctype="multipart/form-data" method="post" class="col-8">
+		<div class="card">
+			<div class="card-header">
+				<h3 class="card-title" align="center">
+					Профиль
+				</h3>
+			</div>
+			<div class="card-body">
+				{% csrf_token %}
+				{{ form.as_p }}
+				<button class="btn btn-success" type="submit">Сохранить</button>
+				<a class="btn btn-danger" href="{% url 'users:generate_new_password' %}" role="button">Сгенерировать
+					пароль</a>
+			</div>
+			<div class="card-footer">
+				<a class="btn btn-sm btn-outline-secondary" href="javascript:history.back()"
+				   type="button">Вернуться</a>
 			</div>
 		</div>
 	</form>

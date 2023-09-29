@@ -83,22 +83,39 @@ class MailingSettingsCreateView(BlogMixin, StatisticsMixin, CreateView):
     form_class = MailingSettingsForm
     success_url = reverse_lazy('mailing:mailing_list')
 
+    extra_context = {
+        'title': 'Email Рассылка',
+        'description': 'Добавление настроек рассылки'
+    }
+
 
 class MailingSettingsUpdateView(BlogMixin, StatisticsMixin, UpdateView):
     model = MailingSettings
     form_class = MailingSettingsForm
     success_url = reverse_lazy('mailing:mailing_list')
 
+    extra_context = {
+        'title': 'Email Рассылка',
+        'description': 'Изменение настроек рассылки'
+    }
+
 
 class MailingSettingsDeleteView(BlogMixin, StatisticsMixin, DeleteView):
     model = MailingSettings
     success_url = reverse_lazy('mailing:mailing_list')
 
+    extra_context = {
+        'title': 'Email Рассылка',
+        'description': 'Удаление настроек рассылки'
+    }
+
 
 class ClientListView(BlogMixin, StatisticsMixin, ListView):
     model = Client
+
     extra_context = {
-        'title': 'Список клиентов'
+        'title': 'Email Рассылка',
+        'description': 'Список клиентов'
     }
 
 
@@ -107,22 +124,37 @@ class ClientCreateView(BlogMixin, StatisticsMixin, CreateView):
     form_class = ClientForm
     success_url = reverse_lazy('mailing:clients')
 
+    extra_context = {
+        'title': 'Email Рассылка',
+        'description': 'Добавление клиента рассылки'
+    }
+
 
 class ClientUpdateView(BlogMixin, StatisticsMixin, UpdateView):
     model = Client
     form_class = ClientForm
     success_url = reverse_lazy('mailing:clients')
 
+    extra_context = {
+        'title': 'Email Рассылка',
+        'description': 'Изменение клиента рассылки'
+    }
+
 
 class ClientDeleteView(BlogMixin, StatisticsMixin, DeleteView):
     model = Client
     success_url = reverse_lazy('mailing:clients')
 
+    extra_context = {
+        'title': 'Email Рассылка',
+        'description': 'Удаление клиента рассылки'
+    }
 
 class MessageListView(BlogMixin, StatisticsMixin, ListView):
     model = MailingMessage
     extra_context = {
-        'title': 'Список сообщений'
+        'title': 'Email Рассылка',
+        'description': 'Список сообщений'
     }
 
 
@@ -131,16 +163,31 @@ class MessageCreateView(BlogMixin, StatisticsMixin, CreateView):
     form_class = MessageForm
     success_url = reverse_lazy('mailing:messages')
 
+    extra_context = {
+        'title': 'Email Рассылка',
+        'description': 'Добавление сообщения для рассылки'
+    }
+
 
 class MessageUpdateView(BlogMixin, StatisticsMixin, UpdateView):
     model = MailingMessage
     form_class = MessageForm
     success_url = reverse_lazy('mailing:messages')
 
+    extra_context = {
+        'title': 'Email Рассылка',
+        'description': 'Изменение сообщения для рассылки'
+    }
+
 
 class MessageDeleteView(BlogMixin, StatisticsMixin, DeleteView):
     model = MailingMessage
     success_url = reverse_lazy('mailing:messages')
+
+    extra_context = {
+        'title': 'Email Рассылка',
+        'description': 'Удаление сообщения для рассылки'
+    }
 
 
 class ContactListView(BlogMixin, StatisticsMixin, ListView):
@@ -154,8 +201,10 @@ class ContactListView(BlogMixin, StatisticsMixin, ListView):
 
 class ClientGroupListView(BlogMixin, StatisticsMixin, ListView):
     model = ClientGroup
+
     extra_context = {
-        'title': 'Список групп клиентов'
+        'title': 'Email Рассылка',
+        'description': 'Список групп клиентов'
     }
 
 
@@ -164,13 +213,28 @@ class ClientGroupCreateView(BlogMixin, StatisticsMixin, CreateView):
     form_class = ClientGroupForm
     success_url = reverse_lazy('mailing:groups')
 
+    extra_context = {
+        'title': 'Email Рассылка',
+        'description': 'Добавление списка групп клиентов'
+    }
+
 
 class ClientGroupUpdateView(BlogMixin, StatisticsMixin, UpdateView):
     model = ClientGroup
     form_class = ClientGroupForm
     success_url = reverse_lazy('mailing:groups')
 
+    extra_context = {
+        'title': 'Email Рассылка',
+        'description': 'Изменение списка групп клиентов'
+    }
+
 
 class ClientGroupDeleteView(BlogMixin, StatisticsMixin, DeleteView):
     model = ClientGroup
     success_url = reverse_lazy('mailing:groups')
+
+    extra_context = {
+        'title': 'Email Рассылка',
+        'description': 'Удаление списка групп клиентов'
+    }

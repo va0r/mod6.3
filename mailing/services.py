@@ -28,7 +28,7 @@ def send_mail_all():
     for ms in MailingSettings.objects.filter(status=MailingSettings.STATUS_STARTED):
         for mg in ms.groups.all():
             group_object = ClientGroup.objects.get(name=mg)
-            clients_in_group = Client.objects.filter(groups=group_object)
+            clients_in_group = Client.objects.filter(groups=group_object, is_blocked=False)
             if not clients_in_group.exists():
                 return
             for mc in clients_in_group.all():

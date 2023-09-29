@@ -41,7 +41,7 @@ def send_welcome_email(sender, instance, created, **kwargs):
 @receiver(m2m_changed, sender=Client.groups.through)
 def client_groups_changed(sender, instance, action, **kwargs):
     groups_list = []
-    is_blocked__content = True
+    is_blocked__content = False
     if action == 'post_add':
         groups_list = instance.groups.all()
         is_blocked__content = instance.is_blocked
@@ -98,7 +98,7 @@ def mailing_settings_groups_changed(sender, instance, action, **kwargs):
         now_utc = get_now_utc()
         for group in groups_list:
             group_object = ClientGroup.objects.get(name=group)
-            clients_in_group = Client.objects.filter(groups=group_object)
+            clients_in_group = Client.objects.filter(groups=group_object, is_blocked=False)
             if not clients_in_group.exists():
                 return
             for mc in clients_in_group:

@@ -83,4 +83,13 @@ def activate_user(request, pk):
     user_for_activate = user.objects.get(id=pk)
     user_for_activate.is_active = True
     user_for_activate.save()
-    return render(request, 'users/activate_user.html')
+
+    statistics_context = StatisticsMixin.get_statistics_context()
+    blog_context = BlogMixin.get_blog_context()
+
+    context = {
+        **statistics_context,
+        **blog_context,
+    }
+
+    return render(request, 'users/activate_user.html', context)

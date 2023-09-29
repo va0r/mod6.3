@@ -11,7 +11,7 @@ class ClientGroup(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Владелец', **NULLABLE)
 
     def __str__(self):
-        return f'({self.owner}): {self.name} '
+        return f'({self.owner}): {self.name}'
 
     class Meta:
         verbose_name = 'Группа клиентов'

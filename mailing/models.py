@@ -11,7 +11,7 @@ class ClientGroup(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Владелец', **NULLABLE)
 
     def __str__(self):
-        return self.name
+        return f'({self.owner}): {self.name} '
 
     class Meta:
         verbose_name = 'Группа клиентов'
@@ -37,7 +37,7 @@ class Client(models.Model):
         super(Client, self).save(*args, **kwargs)
 
     def __str__(self):
-        return f'{self.first_name} {self.last_name} ({self.email})'
+        return f'({self.owner}): {self.first_name} {self.last_name} ({self.email})'
 
     class Meta:
         verbose_name = 'Клиент'
@@ -78,7 +78,7 @@ class MailingSettings(models.Model):
         super(MailingSettings, self).save(*args, **kwargs)
 
     def __str__(self):
-        return f'{self.time} / {self.period}'
+        return f'({self.owner}): {self.time} / {self.period}'
 
     class Meta:
         verbose_name = 'Настройка'
@@ -92,7 +92,7 @@ class MailingMessage(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Владелец', **NULLABLE)
 
     def __str__(self):
-        return f'{self.subject}'
+        return f'({self.owner}): {self.subject}'
 
     class Meta:
         verbose_name = 'Письмо'

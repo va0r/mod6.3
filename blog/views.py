@@ -81,3 +81,8 @@ class NoteUpdateView(BlogMixin, StatisticsMixin, UpdateView):
 class NoteDeleteView(BlogMixin, StatisticsMixin, DeleteView):
     model = Note
     success_url = reverse_lazy('blog:READ_all')
+
+    extra_context = {
+        'title': 'Блог',
+        'description': 'Удалить запись'
+    }

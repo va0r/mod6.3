@@ -143,7 +143,7 @@ class MailingSettingsDeleteView(LoginRequiredMixin, BlogMixin, StatisticsMixin, 
     }
 
 
-class ClientListView(LoginRequiredMixin, BlogMixin, StatisticsMixin, ListView):
+class ClientListView(LoginRequiredMixin, BlogMixin, StatisticsMixin, QuerysetMixin, ListView):
     model = Client
     extra_context = {
         'title': 'Email Рассылка',
@@ -168,7 +168,7 @@ class ClientCreateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, CreateVie
         return super().form_valid(form)
 
 
-class ClientUpdateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, UpdateView):
+class ClientUpdateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, AccessCheckMixin, UpdateView):
     model = Client
     form_class = ClientForm
     success_url = reverse_lazy('mailing:clients')
@@ -185,7 +185,7 @@ class ClientUpdateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, UpdateVie
         return self.object
 
 
-class ClientDeleteView(LoginRequiredMixin, BlogMixin, StatisticsMixin, DeleteView):
+class ClientDeleteView(LoginRequiredMixin, BlogMixin, StatisticsMixin, AccessCheckMixin, DeleteView):
     model = Client
     success_url = reverse_lazy('mailing:clients')
 
@@ -195,7 +195,7 @@ class ClientDeleteView(LoginRequiredMixin, BlogMixin, StatisticsMixin, DeleteVie
     }
 
 
-class MessageListView(LoginRequiredMixin, BlogMixin, StatisticsMixin, ListView):
+class MessageListView(LoginRequiredMixin, BlogMixin, StatisticsMixin, QuerysetMixin, ListView):
     model = MailingMessage
 
     extra_context = {
@@ -221,7 +221,7 @@ class MessageCreateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, CreateVi
         return super().form_valid(form)
 
 
-class MessageUpdateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, UpdateView):
+class MessageUpdateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, AccessCheckMixin, UpdateView):
     model = MailingMessage
     form_class = MessageForm
     success_url = reverse_lazy('mailing:messages')
@@ -238,7 +238,7 @@ class MessageUpdateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, UpdateVi
         return self.object
 
 
-class MessageDeleteView(LoginRequiredMixin, BlogMixin, StatisticsMixin, DeleteView):
+class MessageDeleteView(LoginRequiredMixin, BlogMixin, StatisticsMixin, AccessCheckMixin, DeleteView):
     model = MailingMessage
     success_url = reverse_lazy('mailing:messages')
 
@@ -257,7 +257,7 @@ class ContactListView(BlogMixin, StatisticsMixin, ListView):
     }
 
 
-class ClientGroupListView(LoginRequiredMixin, BlogMixin, StatisticsMixin, ListView):
+class ClientGroupListView(LoginRequiredMixin, BlogMixin, StatisticsMixin, QuerysetMixin, ListView):
     model = ClientGroup
     extra_context = {
         'title': 'Email Рассылка',
@@ -282,7 +282,7 @@ class ClientGroupCreateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, Crea
         return super().form_valid(form)
 
 
-class ClientGroupUpdateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, UpdateView):
+class ClientGroupUpdateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, AccessCheckMixin, UpdateView):
     model = ClientGroup
     form_class = ClientGroupForm
     success_url = reverse_lazy('mailing:groups')
@@ -299,7 +299,7 @@ class ClientGroupUpdateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, Upda
         return self.object
 
 
-class ClientGroupDeleteView(LoginRequiredMixin, BlogMixin, StatisticsMixin, DeleteView):
+class ClientGroupDeleteView(LoginRequiredMixin, BlogMixin, StatisticsMixin, AccessCheckMixin, DeleteView):
     model = ClientGroup
     success_url = reverse_lazy('mailing:groups')
 

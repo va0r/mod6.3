@@ -1,6 +1,7 @@
 import datetime
 
 from django.conf import settings
+from django.contrib.auth import get_user
 from django.core.mail import send_mail
 from django.db.models.signals import m2m_changed
 from django.db.models.signals import post_save
@@ -40,6 +41,13 @@ def send_welcome_email(sender, instance, created, **kwargs):
 
 @receiver(m2m_changed, sender=Client.groups.through)
 def client_groups_changed(sender, instance, action, **kwargs):
+    user = kwargs.get('user')
+    if not user or not user.is_authenticated:
+        return
+
+    if instance != user:  # Проверка, что это текущий пользователь
+        return
+
     groups_list = []
     is_blocked__content = True
     if action == 'post_add':
@@ -57,7 +65,7 @@ def client_groups_changed(sender, instance, action, **kwargs):
     if all(conditions):
         now_utc = get_now_utc()
         for group in groups_list:
-            for ms in MailingSettings.objects.filter(groups=group, status=MailingSettings.STATUS_STARTED):
+            for ms in MailingSettings.objects.filter(groups=group.name, status=MailingSettings.STATUS_STARTED):
                 ml = MailingLog.objects.filter(client=instance.id, settings=ms)
                 if ml.exists():
                     last_try_date_utc = ml.order_by('-last_try').first().last_try.astimezone(datetime.timezone.utc)
@@ -76,6 +84,10 @@ def client_groups_changed(sender, instance, action, **kwargs):
 
 @receiver(m2m_changed, sender=MailingSettings.groups.through)
 def mailing_settings_groups_changed(sender, instance, action, **kwargs):
+    user = kwargs.get('user')
+    if not user or not user.is_authenticated:
+        return
+
     groups_list = []
     message_content = ''
     status_content = ''
@@ -97,7 +109,7 @@ def mailing_settings_groups_changed(sender, instance, action, **kwargs):
     if all(conditions):
         now_utc = get_now_utc()
         for group in groups_list:
-            group_object = ClientGroup.objects.get(name=group)
+            group_object = ClientGroup.objects.get(name=group.name)
             clients_in_group = Client.objects.filter(groups=group_object)
             if not clients_in_group.exists():
                 return

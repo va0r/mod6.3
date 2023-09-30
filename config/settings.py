@@ -177,3 +177,6 @@ if CACHE_ENABLED:
             "LOCATION": os.getenv('CACHE_LOCATION'),
         }
     }
+
+# Favicon
+FAVICON_PATH = ''

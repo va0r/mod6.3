@@ -1,10 +1,15 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 
 NULLABLE = {'blank': True, 'null': True}
+User = get_user_model()
 
 
 class ClientGroup(models.Model):
     name = models.CharField(max_length=255, verbose_name='Название группы')
+
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='client_groups', verbose_name='Владелец',
+                              **NULLABLE)
 
     def __str__(self):
         return self.name
@@ -25,6 +30,9 @@ class Client(models.Model):
 
     groups = models.ManyToManyField(ClientGroup, related_name='clients', blank=True, verbose_name='Группы клиентов',
                                     default=None)
+
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='clients', verbose_name='Владелец',
+                              **NULLABLE)
 
     def save(self, *args, **kwargs):
         self.domain = self.email.split('@')[-1]
@@ -66,8 +74,8 @@ class MailingSettings(models.Model):
     groups = models.ManyToManyField('ClientGroup', related_name='mailing_settings', blank=True,
                                     verbose_name='Группы рассылок')
 
-    def save(self, *args, **kwargs):
-        super(MailingSettings, self).save(*args, **kwargs)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mailing_settings', verbose_name='Владелец',
+                              **NULLABLE)
 
     def __str__(self):
         return f'{self.time} / {self.period}'
@@ -81,8 +89,11 @@ class MailingMessage(models.Model):
     subject = models.CharField(max_length=250, verbose_name='Тема')
     message = models.TextField(verbose_name='Тело')
 
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mailing_message', verbose_name='Владелец',
+                              **NULLABLE)
+
     def __str__(self):
-        return f'{self.subject}'
+        return self.subject
 
     class Meta:
         verbose_name = 'Письмо'
@@ -112,9 +123,6 @@ class MailingLog(models.Model):
 class Contact(models.Model):
     key = models.CharField(max_length=25, verbose_name='Ключ')
     value = models.CharField(max_length=100, verbose_name='Значение')
-
-    def __str__(self):
-        return f'{self.key}: {self.value}'
 
     class Meta:
         verbose_name = 'Контакт'

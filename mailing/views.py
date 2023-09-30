@@ -125,13 +125,16 @@ class MailingSettingsCreateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, 
 
 class MailingSettingsUpdateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, AccessCheckMixin, UpdateView):
     model = MailingSettings
-    form_class = MailingSettingsForm
+    # form_class = MailingSettingsForm
     success_url = reverse_lazy('mailing:mailing_list')
 
     extra_context = {
         'title': 'Email Рассылка',
         'description': 'Изменение настроек рассылки'
     }
+
+    def get_form_class(self):
+        return MailingSettingsForm
 
 
 class MailingSettingsDeleteView(LoginRequiredMixin, BlogMixin, StatisticsMixin, AccessCheckMixin, DeleteView):

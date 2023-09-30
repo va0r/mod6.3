@@ -31,8 +31,13 @@ class UserRegisterForm(StyleFormMixin, UserCreationForm):
 class UserProfileForm(StyleFormMixin, UserChangeForm):
     class Meta:
         model = User
-        fields = ('email', 'first_name', 'last_name', 'is_staff', 'is_active', 'password')
+        fields = ('email', 'first_name', 'last_name', 'is_active', 'password')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['password'].widget = forms.HiddenInput()
+
+    is_active = forms.BooleanField(
+        label='Активный',
+        help_text='',
+    )

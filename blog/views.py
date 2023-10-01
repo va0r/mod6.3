@@ -4,7 +4,7 @@ from pytils.translit import slugify
 
 from blog.forms import NoteForm
 from blog.models import Note
-from mailing.views import StatisticsMixin, BlogMixin
+from mailing.mixins import StatisticsMixin, BlogMixin
 
 
 class NoteCreateView(BlogMixin, StatisticsMixin, CreateView):

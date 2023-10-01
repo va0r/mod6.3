@@ -15,12 +15,25 @@ class StyleFormMixin:
 
 
 class MailingSettingsForm(StyleFormMixin, forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        super().__init__(*args, **kwargs)
+        if self.request:
+            self.fields['groups'].queryset = ClientGroup.objects.filter(owner=self.request.user)
+            self.fields['message'].queryset = MailingMessage.objects.filter(owner=self.request.user)
+
     class Meta:
         model = MailingSettings
         exclude = ('owner',)
 
 
 class ClientForm(StyleFormMixin, forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        super().__init__(*args, **kwargs)
+        if self.request:
+            self.fields['groups'].queryset = ClientGroup.objects.filter(owner=self.request.user)
+
     class Meta:
         model = Client
         exclude = ('owner',)

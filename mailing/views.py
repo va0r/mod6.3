@@ -83,6 +83,13 @@ class QuerysetMixin:
         return self.model.objects.filter(owner=self.request.user)
 
 
+class RequestFormMixin:
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
+
 class MailingSettingsListView(LoginRequiredMixin, BlogMixin, StatisticsMixin, QuerysetMixin, ListView):
     model = MailingSettings
 
@@ -106,7 +113,7 @@ def toggle__is_blocked(request, pk):
     return redirect('mailing:clients')
 
 
-class MailingSettingsCreateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, CreateView):
+class MailingSettingsCreateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, RequestFormMixin, CreateView):
     model = MailingSettings
     form_class = MailingSettingsForm
     success_url = reverse_lazy('mailing:mailing_list')
@@ -123,7 +130,7 @@ class MailingSettingsCreateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, 
         return super().form_valid(form)
 
 
-class MailingSettingsUpdateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, AccessCheckMixin, UpdateView):
+class MailingSettingsUpdateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, AccessCheckMixin, RequestFormMixin, UpdateView):
     model = MailingSettings
     form_class = MailingSettingsForm
     success_url = reverse_lazy('mailing:mailing_list')
@@ -153,7 +160,7 @@ class ClientListView(LoginRequiredMixin, BlogMixin, StatisticsMixin, QuerysetMix
     }
 
 
-class ClientCreateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, CreateView):
+class ClientCreateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, RequestFormMixin, CreateView):
     model = Client
     form_class = ClientForm
     success_url = reverse_lazy('mailing:clients')
@@ -170,7 +177,7 @@ class ClientCreateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, CreateVie
         return super().form_valid(form)
 
 
-class ClientUpdateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, AccessCheckMixin, UpdateView):
+class ClientUpdateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, AccessCheckMixin, RequestFormMixin, UpdateView):
     model = Client
     form_class = ClientForm
     success_url = reverse_lazy('mailing:clients')

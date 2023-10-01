@@ -8,4 +8,4 @@ class MailingConfig(AppConfig):
 
     def ready(self):
         import mailing.signals
-        print(mailing.signals.get_now_utc())
+        print(f'\n>>>>>>>>>> {mailing.signals.get_now_utc() = } <<<<<<<<<<\n')

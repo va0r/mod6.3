@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 from mailing.forms import MailingSettingsForm, ClientForm, MessageForm, ClientGroupForm
-from mailing.mixins import BlogMixin, StatisticsMixin, QuerysetMixin, RequestFormMixin, AccessCheckMixin
+from mailing.mixins import BlogMixin, StatisticsMixin, QuerysetMixin, RequestFormMixin, AccessCheckMixin, FormValidMixin
 from mailing.models import MailingSettings, Client, MailingMessage, Contact, ClientGroup
 
 
@@ -32,7 +32,8 @@ def toggle__is_blocked(request, pk):
     return redirect('mailing:clients')
 
 
-class MailingSettingsCreateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, RequestFormMixin, CreateView):
+class MailingSettingsCreateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, RequestFormMixin, FormValidMixin,
+                                CreateView):
     model = MailingSettings
     form_class = MailingSettingsForm
     success_url = reverse_lazy('mailing:mailing_list')
@@ -41,12 +42,6 @@ class MailingSettingsCreateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, 
         'title': 'Email Рассылка',
         'description': 'Добавление настроек рассылки'
     }
-
-    def form_valid(self, form):
-        self.object = form.save()
-        self.object.owner = self.request.user
-        self.object.save()
-        return super().form_valid(form)
 
 
 class MailingSettingsUpdateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, AccessCheckMixin, RequestFormMixin,
@@ -80,7 +75,7 @@ class ClientListView(LoginRequiredMixin, BlogMixin, StatisticsMixin, QuerysetMix
     }
 
 
-class ClientCreateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, RequestFormMixin, CreateView):
+class ClientCreateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, RequestFormMixin, FormValidMixin, CreateView):
     model = Client
     form_class = ClientForm
     success_url = reverse_lazy('mailing:clients')
@@ -89,12 +84,6 @@ class ClientCreateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, RequestFo
         'title': 'Email Рассылка',
         'description': 'Добавление клиента рассылки'
     }
-
-    def form_valid(self, form):
-        self.object = form.save()
-        self.object.owner = self.request.user
-        self.object.save()
-        return super().form_valid(form)
 
 
 class ClientUpdateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, AccessCheckMixin, RequestFormMixin, UpdateView):
@@ -126,7 +115,7 @@ class MessageListView(LoginRequiredMixin, BlogMixin, StatisticsMixin, QuerysetMi
     }
 
 
-class MessageCreateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, CreateView):
+class MessageCreateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, FormValidMixin, CreateView):
     model = MailingMessage
     form_class = MessageForm
     success_url = reverse_lazy('mailing:messages')
@@ -135,12 +124,6 @@ class MessageCreateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, CreateVi
         'title': 'Email Рассылка',
         'description': 'Добавление сообщения для рассылки'
     }
-
-    def form_valid(self, form):
-        self.object = form.save()
-        self.object.owner = self.request.user
-        self.object.save()
-        return super().form_valid(form)
 
 
 class MessageUpdateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, AccessCheckMixin, UpdateView):
@@ -182,7 +165,7 @@ class ClientGroupListView(LoginRequiredMixin, BlogMixin, StatisticsMixin, Querys
     }
 
 
-class ClientGroupCreateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, CreateView):
+class ClientGroupCreateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, FormValidMixin, CreateView):
     model = ClientGroup
     form_class = ClientGroupForm
     success_url = reverse_lazy('mailing:groups')
@@ -191,12 +174,6 @@ class ClientGroupCreateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, Crea
         'title': 'Email Рассылка',
         'description': 'Добавление списка групп клиентов'
     }
-
-    def form_valid(self, form):
-        self.object = form.save()
-        self.object.owner = self.request.user
-        self.object.save()
-        return super().form_valid(form)
 
 
 class ClientGroupUpdateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, AccessCheckMixin, UpdateView):

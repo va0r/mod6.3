@@ -18,6 +18,7 @@ class MailingSettingsListView(LoginRequiredMixin, BlogMixin, StatisticsMixin, Qu
         context_data = super().get_context_data(**kwargs)
         context_data['title'] = 'Email Рассылка'
         context_data['description'] = 'Главная'
+        context_data['is_moderator'] = self.request.user.groups.filter(name='Модераторы').exists()
         return context_data
 
 

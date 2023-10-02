@@ -9,22 +9,31 @@ from mailing.models import MailingSettings, Client
 class StatisticsMixin:
     @staticmethod
     def get_statistics_context(user):
-        context = {
-            'count_mailings_all': MailingSettings.objects.filter(owner=user).count(),
-            'count_mailings_active': MailingSettings.objects.filter(owner=user,
-                                                                    status=MailingSettings.STATUS_STARTED).count(),
-            'count_clients': Client.objects.filter(owner=user).distinct().count(),
-        }
+        if not user.is_authenticated:
+            context = {
+                'count_mailings_all': 0,
+                'count_mailings_active': 0,
+                'count_clients': 0,
+            }
+        elif user.groups.filter(name='Модераторы').exists():
+            context = {
+                'count_mailings_all': MailingSettings.objects.count(),
+                'count_mailings_active': MailingSettings.objects.filter(status=MailingSettings.STATUS_STARTED).count(),
+                'count_clients': Client.objects.distinct().count(),
+            }
+        else:
+            context = {
+                'count_mailings_all': MailingSettings.objects.filter(owner=user).count(),
+                'count_mailings_active': MailingSettings.objects.filter(owner=user, status=MailingSettings.STATUS_STARTED).count(),
+                'count_clients': Client.objects.filter(owner=user).distinct().count(),
+            }
         return context
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
 
-        if user.is_authenticated:
-            statistics_context = self.get_statistics_context(user)
-        else:
-            statistics_context = self.get_statistics_context(None)
+        statistics_context = self.get_statistics_context(user)
 
         context.update(statistics_context)
         return context
@@ -74,7 +83,12 @@ class QuerysetMixin:
     def get_queryset(self):
         if self.model is None:
             raise ValueError("The 'model' attribute must be defined in the subclass.")
-        return self.model.objects.filter(owner=self.request.user)
+
+        user = self.request.user
+        if user.groups.filter(name='Модераторы').exists():
+            return self.model.objects.all()
+        else:
+            return self.model.objects.filter(owner=user)
 
 
 class RequestFormMixin:

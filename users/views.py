@@ -84,7 +84,7 @@ def activate_user(request, pk):
     user_for_activate.is_active = True
     user_for_activate.save()
 
-    statistics_context = StatisticsMixin.get_statistics_context()
+    statistics_context = StatisticsMixin.get_statistics_context(None)
     blog_context = BlogMixin.get_blog_context()
 
     context = {

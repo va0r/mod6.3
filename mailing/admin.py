@@ -6,20 +6,21 @@ from mailing.models import Client, MailingSettings, MailingMessage, MailingLog, 
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
     list_display = ('email', 'first_name', 'last_name', 'is_blocked', 'domain', 'owner',)
-    list_filter = ('domain', 'is_blocked',)
+    list_filter = ('domain', 'is_blocked', 'owner',)
     search_fields = ('email',)
 
 
 @admin.register(MailingSettings)
 class MailingSettingsAdmin(admin.ModelAdmin):
     list_display = ('time', 'period', 'status', 'message', 'owner',)
-    list_filter = ('period', 'status',)
+    list_filter = ('period', 'status', 'owner',)
     search_fields = ('message',)
 
 
 @admin.register(MailingMessage)
 class MailingMessageAdmin(admin.ModelAdmin):
     list_display = ('subject', 'message', 'owner',)
+    list_filter = ('owner',)
     search_fields = ('message',)
 
 
@@ -33,3 +34,4 @@ class MailingLogAdmin(admin.ModelAdmin):
 @admin.register(ClientGroup)
 class ClientGroupAdmin(admin.ModelAdmin):
     list_display = ('name', 'owner',)
+    list_filter = ('owner',)

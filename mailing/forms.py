@@ -27,6 +27,16 @@ class MailingSettingsForm(StyleFormMixin, forms.ModelForm):
         exclude = ('owner',)
 
 
+class MailingSettingsModeratorForm(StyleFormMixin, forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        request = kwargs.pop('request', None)
+        super().__init__(*args, **kwargs)
+
+    class Meta:
+        model = MailingSettings
+        fields = ['status']
+
+
 class ClientForm(StyleFormMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
@@ -37,6 +47,16 @@ class ClientForm(StyleFormMixin, forms.ModelForm):
     class Meta:
         model = Client
         exclude = ('owner',)
+
+
+class ClientModeratorForm(StyleFormMixin, forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        request = kwargs.pop('request', None)
+        super().__init__(*args, **kwargs)
+
+    class Meta:
+        model = Client
+        fields = ['is_blocked']
 
 
 class ClientGroupForm(StyleFormMixin, forms.ModelForm):

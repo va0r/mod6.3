@@ -4,9 +4,11 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
-from mailing.forms import MailingSettingsForm, ClientForm, MessageForm, ClientGroupForm
+from mailing.forms import MailingSettingsForm, ClientForm, MessageForm, ClientGroupForm, MailingSettingsModeratorForm, \
+    ClientModeratorForm
 from mailing.mixins import BlogMixin, StatisticsMixin, QuerysetMixin, RequestFormMixin, AccessCheckMixin, FormValidMixin
 from mailing.models import MailingSettings, Client, MailingMessage, Contact, ClientGroup
+from mailing.permissions import moderator_required, is_moderator
 
 
 class MailingSettingsListView(LoginRequiredMixin, BlogMixin, StatisticsMixin, QuerysetMixin, ListView):
@@ -20,6 +22,7 @@ class MailingSettingsListView(LoginRequiredMixin, BlogMixin, StatisticsMixin, Qu
 
 
 @login_required
+@moderator_required
 def toggle__is_blocked(request, pk):
     client = get_object_or_404(Client, pk=pk)
 
@@ -47,13 +50,19 @@ class MailingSettingsCreateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, 
 class MailingSettingsUpdateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, AccessCheckMixin, RequestFormMixin,
                                 UpdateView):
     model = MailingSettings
-    form_class = MailingSettingsForm
     success_url = reverse_lazy('mailing:mailing_list')
 
     extra_context = {
         'title': 'Email Рассылка',
         'description': 'Изменение настроек рассылки'
     }
+
+    def dispatch(self, *args, **kwargs):
+        if is_moderator(self.request.user):
+            self.form_class = MailingSettingsModeratorForm
+        else:
+            self.form_class = MailingSettingsForm
+        return super().dispatch(*args, **kwargs)
 
 
 class MailingSettingsDeleteView(LoginRequiredMixin, BlogMixin, StatisticsMixin, AccessCheckMixin, DeleteView):
@@ -88,13 +97,19 @@ class ClientCreateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, RequestFo
 
 class ClientUpdateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, AccessCheckMixin, RequestFormMixin, UpdateView):
     model = Client
-    form_class = ClientForm
     success_url = reverse_lazy('mailing:clients')
 
     extra_context = {
         'title': 'Email Рассылка',
         'description': 'Изменение клиента рассылки'
     }
+
+    def dispatch(self, *args, **kwargs):
+        if is_moderator(self.request.user):
+            self.form_class = ClientModeratorForm
+        else:
+            self.form_class = ClientForm
+        return super().dispatch(*args, **kwargs)
 
 
 class ClientDeleteView(LoginRequiredMixin, BlogMixin, StatisticsMixin, AccessCheckMixin, DeleteView):

@@ -3,6 +3,7 @@ from django.views.generic import ListView, CreateView, DetailView, UpdateView, D
 from pytils.translit import slugify
 
 from blog.forms import NoteForm
+from blog.mixins import CacheMixin
 from blog.models import Note
 from mailing.mixins import StatisticsMixin, BlogMixin
 
@@ -25,7 +26,7 @@ class NoteCreateView(BlogMixin, StatisticsMixin, CreateView):
         return super().form_valid(form)
 
 
-class NoteListView(BlogMixin, StatisticsMixin, ListView):
+class NoteListView(BlogMixin, StatisticsMixin, CacheMixin, ListView):
     model = Note
 
     extra_context = {
@@ -39,7 +40,7 @@ class NoteListView(BlogMixin, StatisticsMixin, ListView):
         return queryset
 
 
-class NoteDetailView(BlogMixin, StatisticsMixin, DetailView):
+class NoteDetailView(BlogMixin, StatisticsMixin, CacheMixin, DetailView):
     model = Note
     form_class = NoteForm
 

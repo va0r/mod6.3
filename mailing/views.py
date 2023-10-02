@@ -79,10 +79,12 @@ class MailingSettingsDeleteView(LoginRequiredMixin, BlogMixin, StatisticsMixin, 
 class ClientListView(LoginRequiredMixin, BlogMixin, StatisticsMixin, QuerysetMixin, ListView):
     model = Client
 
-    extra_context = {
-        'title': 'Email Рассылка',
-        'description': 'Список клиентов'
-    }
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        context_data['title'] = 'Email Рассылка'
+        context_data['description'] = 'Список клиентов'
+        context_data['is_moderator'] = self.request.user.groups.filter(name='Модераторы').exists()
+        return context_data
 
 
 class ClientCreateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, RequestFormMixin, FormValidMixin, CreateView):
@@ -125,10 +127,13 @@ class ClientDeleteView(LoginRequiredMixin, BlogMixin, StatisticsMixin, AccessChe
 
 class MessageListView(LoginRequiredMixin, BlogMixin, StatisticsMixin, QuerysetMixin, ListView):
     model = MailingMessage
-    extra_context = {
-        'title': 'Email Рассылка',
-        'description': 'Список сообщений'
-    }
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        context_data['title'] = 'Email Рассылка'
+        context_data['description'] = 'Список сообщений'
+        context_data['is_moderator'] = self.request.user.groups.filter(name='Модераторы').exists()
+        return context_data
 
 
 class MessageCreateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, FormValidMixin, CreateView):
@@ -175,10 +180,12 @@ class ContactListView(BlogMixin, StatisticsMixin, ListView):
 class ClientGroupListView(LoginRequiredMixin, BlogMixin, StatisticsMixin, QuerysetMixin, ListView):
     model = ClientGroup
 
-    extra_context = {
-        'title': 'Email Рассылка',
-        'description': 'Список групп клиентов'
-    }
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        context_data['title'] = 'Email Рассылка'
+        context_data['description'] = 'Список групп клиентов'
+        context_data['is_moderator'] = self.request.user.groups.filter(name='Модераторы').exists()
+        return context_data
 
 
 class ClientGroupCreateView(LoginRequiredMixin, BlogMixin, StatisticsMixin, FormValidMixin, CreateView):

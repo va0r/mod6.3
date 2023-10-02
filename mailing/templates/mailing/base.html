@@ -20,7 +20,7 @@
 <body>
 
 <header>
-    {% include 'mailing/includes/navbar.html' %}
+	{% include 'mailing/includes/navbar.html' %}
 </header>
 
 <div class="container mt-4">
@@ -36,9 +36,12 @@
 		<div class="col-md-4">
 			<div class="h4 text-center">Статьи из блога</div>
 			<ul class="list-group">
-				<li class="list-group-item">Статья 1: <a href="{% url 'blog:READ_one' blog_1.pk %}">{{ blog_1.title }}</a></li>
-				<li class="list-group-item">Статья 2: <a href="{% url 'blog:READ_one' blog_2.pk %}">{{ blog_2.title }}</a></li>
-				<li class="list-group-item">Статья 3: <a href="{% url 'blog:READ_one' blog_3.pk %}">{{ blog_3.title }}</a></li>
+				<li class="list-group-item">Статья 1: <a
+						href="{% url 'blog:READ_one' blog_1.pk %}">{{ blog_1.title }}</a></li>
+				<li class="list-group-item">Статья 2: <a
+						href="{% url 'blog:READ_one' blog_2.pk %}">{{ blog_2.title }}</a></li>
+				<li class="list-group-item">Статья 3: <a
+						href="{% url 'blog:READ_one' blog_3.pk %}">{{ blog_3.title }}</a></li>
 			</ul>
 		</div>
 	</div>

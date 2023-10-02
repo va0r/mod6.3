@@ -55,7 +55,10 @@
 						</div>
 						<div class="card-footer">
 							<a href="{% url 'mailing:mailing_update' item.pk %}" class="btn badge-info">Изменить</a>
-							<a href="{% url 'mailing:mailing_delete' item.pk %}" class="btn badge-danger">Удалить</a>
+							{% if not is_moderator %}
+								<a href="{% url 'mailing:mailing_delete' item.pk %}"
+								   class="btn badge-danger">Удалить</a>
+							{% endif %}
 						</div>
 					</div>
 				</div>

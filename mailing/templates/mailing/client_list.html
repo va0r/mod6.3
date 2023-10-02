@@ -2,11 +2,16 @@
 
 {% block content %}
 	<div class="col-8">
-		<a href="{% url 'mailing:clients_create' %}" class="btn btn-success" style="width: 100%">
-			Создать клиента рассылки
-		</a>
+		{% if not is_moderator %}
+			<a href="{% url 'mailing:clients_create' %}" class="btn btn-success" style="width: 100%">
+				Создать клиента рассылки
+			</a>
+		{% else %}
+			<div style="background-color: darkred; text-align: center; width: 100%;">
+				<p style="margin: 0; padding: 7px; color: white;">Режим модератора</p>
+			</div>
+		{% endif %}
 	</div>
-
 	<div class="col-8"><br></div>
 	<div class="col-8">
 		<div style="background-color: lightgrey; padding: 20px 20px; text-align: left; height: 20px;"></div>
@@ -40,11 +45,11 @@
 								<tr>
 									<td>Группа</td>
 									<td>
-											{% for group in item.groups.all %}
-												{{ group.name }}{% if not forloop.last %},<br> {% endif %}
-											{% empty %}
-												Нет групп
-											{% endfor %}
+										{% for group in item.groups.all %}
+											{{ group.name }}{% if not forloop.last %},<br> {% endif %}
+										{% empty %}
+											Нет групп
+										{% endfor %}
 									</td>
 								</tr>
 							</table>
@@ -58,7 +63,10 @@
 								<a href="{% url 'mailing:client__is_blocked_toggle' item.pk %}"
 								   class="btn badge-warning">block</a>
 							{% endif %}
-							<a href="{% url 'mailing:clients_delete' item.pk %}" class="btn badge-danger">Удалить</a>
+							{% if not is_moderator %}
+								<a href="{% url 'mailing:mailing_delete' item.pk %}"
+								   class="btn badge-danger">Удалить</a>
+							{% endif %}
 						</div>
 					</div>
 				</div>

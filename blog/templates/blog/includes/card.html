@@ -13,11 +13,14 @@
 			<p class="card-text">slug: {{ object.slug }}</p>
 			<div class="d-flex justify-content-between align-items-center">
 				<div class="btn-group">
-					<a href="{% url 'blog:READ_all' %}" type="button" class="btn btn-sm btn-outline-secondary"><font color="#006400">Blog</font></a>
+					<a href="{% url 'blog:READ_all' %}" type="button" class="btn btn-sm btn-outline-secondary"><font
+							color="#006400">Blog</font></a>
 					<a href="{% url 'blog:READ_one' object.pk %}" type="button"
 					   class="btn btn-sm btn-outline-secondary"><font color="red">R</font>ead</a>
-					<a href="{% url 'blog:UPDATE' object.pk %}" type="button" class="btn btn-sm btn-outline-secondary"><font color="red">U</font>pdate</a>
-					<a href="{% url 'blog:DELETE' object.pk %}" type="button" class="btn btn-sm btn-outline-secondary"><font color="red">D</font>elete</a>
+					<a href="{% url 'blog:UPDATE' object.pk %}" type="button"
+					   class="btn btn-sm btn-outline-secondary"><font color="red">U</font>pdate</a>
+					<a href="{% url 'blog:DELETE' object.pk %}" type="button"
+					   class="btn btn-sm btn-outline-secondary"><font color="red">D</font>elete</a>
 				</div>
 			</div>
 		</div>

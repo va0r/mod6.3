@@ -60,10 +60,12 @@ class MailingSettings(models.Model):
     STATUS_CREATED = 'created'
     STATUS_STARTED = 'started'
     STATUS_DONE = 'done'
+    STATUS_OFF = 'off'
     STATUSES = (
         (STATUS_STARTED, 'Запущена'),
         (STATUS_CREATED, 'Создана'),
         (STATUS_DONE, 'Завершена'),
+        (STATUS_OFF, 'Выключена'),
     )
 
     time = models.TimeField(verbose_name='Время')

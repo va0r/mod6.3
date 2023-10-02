@@ -24,7 +24,8 @@ class StatisticsMixin:
         else:
             context = {
                 'count_mailings_all': MailingSettings.objects.filter(owner=user).count(),
-                'count_mailings_active': MailingSettings.objects.filter(owner=user, status=MailingSettings.STATUS_STARTED).count(),
+                'count_mailings_active': MailingSettings.objects.filter(owner=user,
+                                                                        status=MailingSettings.STATUS_STARTED).count(),
                 'count_clients': Client.objects.filter(owner=user).distinct().count(),
             }
         return context

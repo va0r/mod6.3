@@ -1,0 +1,46 @@
+{% extends 'mailing/base.html' %}
+
+{% block content %}
+	<div class="col-8">
+		{% if not is_moderator %}
+			<a href="{% url 'mailing:groups_create' %}" class="btn btn-success" style="width: 100%">
+				Создать группу клиентов рассылки
+			</a>
+		{% else %}
+			<div style="background-color: darkred; text-align: center; width: 100%;">
+				<p style="margin: 0; padding: 7px; color: white;">Режим модератора</p>
+			</div>
+		{% endif %}
+	</div>
+	<div class="col-8"><br></div>
+	<div class="col-8">
+		<div style="background-color: lightgrey; padding: 20px 20px; text-align: left; height: 20px;"></div>
+	</div>
+	<div class="col-8"><br></div>
+
+	<div class="col-8">
+		<div class="row">
+			{% for item in object_list %}
+				<div class="col-6">
+					<div class="card">
+						<div class="card-header text-center badge-primary">{{ item.name.title }}</div>
+						<div class="card-body">
+							<table class="table">
+								<tr>
+									<td>Наименование</td>
+									<td>{{ item.name }}</td>
+								</tr>
+							</table>
+						</div>
+						<div class="card-footer">
+							{% if not is_moderator %}
+								<a href="{% url 'mailing:groups_update' item.pk %}" class="btn badge-info">Изменить</a>
+								<a href="{% url 'mailing:groups_delete' item.pk %}" class="btn badge-danger">Удалить</a>
+							{% endif %}
+						</div>
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+{% endblock %}

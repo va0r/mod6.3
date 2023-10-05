@@ -1,0 +1,40 @@
+{% extends 'mailing/base.html' %}
+{% load my_tags %}
+
+{% block content %}
+	<div class="col-8">
+		<div class="row">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-header text-center badge-primary">{{ object.title.upper }}</div>
+					<div class="card-body">
+						<img class="card-img-top" src="{{ object.image|my_media }}"
+						     alt="{{ object.title.title|truncatewords:3 }}">
+						<table class="table">
+							<tr>
+								<td>Содержание</td>
+								<td>{{ object.content }}</td>
+							</tr>
+							<tr>
+								<td>Просмотры</td>
+								<td>{{ object.cnt_views }}</td>
+							</tr>
+						</table>
+					</div>
+					<div class="card-footer align-self-center">
+						<div class="btn-group">
+							<a href="{% url 'blog:READ_all' %}" type="button"
+							   class="btn btn-sm btn-outline-secondary"><font color="#006400">B</font>log</a>
+							<a href="{% url 'blog:READ_one' object.pk %}" type="button"
+							   class="btn btn-sm btn-outline-secondary"><font color="red">R</font>ead</a>
+							<a href="{% url 'blog:UPDATE' object.pk %}" type="button"
+							   class="btn btn-sm btn-outline-secondary"><font color="red">U</font>pdate</a>
+							<a href="{% url 'blog:DELETE' object.pk %}" type="button"
+							   class="btn btn-sm btn-outline-secondary"><font color="red">D</font>elete</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

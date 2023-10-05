@@ -2,18 +2,19 @@
 
 {% block content %}
 	<div class="col-8">
-		<a href="{% url 'mailing:messages_create' %}" class="btn btn-success" style="width: 100%">
-			Создать сообщение рассылки
-		</a>
+		{% if not is_moderator %}
+			<a href="{% url 'mailing:groups_create' %}" class="btn btn-success" style="width: 100%">
+				Создать сообщение рассылки
+			</a>
+		{% else %}
+			<div style="background-color: darkred; text-align: center; width: 100%;">
+				<p style="margin: 0; padding: 7px; color: white;">Режим модератора</p>
+			</div>
+		{% endif %}
 	</div>
-
 	<div class="col-8"><br></div>
 	<div class="col-8">
-		<div style="background-color: lightgrey; padding: 20px 20px; text-align: left; height: 150px;">
-			<p><b>Сообщение рассылки</b> -- это тема и текст рассылки.<br>
-				Сообщение должно быть добавлено в настройки рассылки.<br>
-				После этого все клиенты рассылки получают электронное письмо с темой сообщения в теме письма и телом сообщения как текстом письма.</p>
-		</div>
+		<div style="background-color: lightgrey; padding: 20px 20px; text-align: left; height: 20px;"></div>
 	</div>
 	<div class="col-8"><br></div>
 
@@ -32,8 +33,13 @@
 							</table>
 						</div>
 						<div class="card-footer">
-							<a href="{% url 'mailing:messages_update' item.pk %}" class="btn badge-info">Изменить</a>
-							<a href="{% url 'mailing:messages_delete' item.pk %}" class="btn badge-danger">Удалить</a>
+							{% if not is_moderator %}
+								<a href="{% url 'mailing:messages_update' item.pk %}"
+								   class="btn badge-info">Изменить</a>
+								<a href="{% url 'mailing:messages_delete' item.pk %}"
+								   class="btn badge-danger">Удалить</a>
+							{% endif %}
+
 						</div>
 					</div>
 				</div>

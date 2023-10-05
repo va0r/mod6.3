@@ -1,0 +1,55 @@
+{% extends 'mailing/base.html' %}
+{% load my_tags %}
+
+{% block content %}
+	<div class="col-8">
+		<a class="btn btn-success" style="width: 100%" href="{% url 'blog:CREATE' %}">
+			Создать запись блога
+		</a>
+	</div>
+
+	<div class="col-8"><br></div>
+	<div class="col-8">
+		<div style="background-color: lightgrey; padding: 20px 20px; text-align: left; height: 20px;"></div>
+	</div>
+	<div class="col-8"><br></div>
+
+	<div class="col-8">
+		<div class="row">
+			{% for item in object_list %}
+				<div class="col-6">
+					<div class="card">
+						<div class="card-header text-center badge-primary">{{ item.title.upper }}</div>
+						<div class="card-body">
+							<img class="card-img-top" src="{{ item.image|my_media }}"
+							     alt="{{ item.title.title|truncatewords:3 }}">
+							<table class="table">
+								<tr>
+									<td>Содержание</td>
+									<td>{{ item.content|truncatewords:10 }}</td>
+								</tr>
+								<tr>
+									<td>Просмотры</td>
+									<td>{{ item.cnt_views }}</td>
+								</tr>
+							</table>
+						</div>
+						<div class="card-footer align-self-center">
+							<div class="btn-group">
+								<a href="{% url 'blog:READ_all' %}" type="button"
+								   class="btn btn-sm btn-outline-secondary"><font color="#006400">B</font>log</a>
+								<a href="{% url 'blog:READ_one' item.pk %}" type="button"
+								   class="btn btn-sm btn-outline-secondary"><font color="red">R</font>ead</a>
+								<a href="{% url 'blog:UPDATE' item.pk %}" type="button"
+								   class="btn btn-sm btn-outline-secondary"><font color="red">U</font>pdate</a>
+								<a href="{% url 'blog:DELETE' item.pk %}" type="button"
+								   class="btn btn-sm btn-outline-secondary"><font color="red">D</font>elete</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+
+{% endblock %}

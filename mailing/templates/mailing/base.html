@@ -1,4 +1,5 @@
 {% load static %}
+{% load cache %}
 <!DOCTYPE html>
 <html lang="ru-ru">
 <head>
@@ -19,9 +20,11 @@
 
 <body>
 
-<header>
-    {% include 'mailing/includes/navbar.html' %}
-</header>
+{% cache 0 'header' %}
+	<header>
+		{% include 'mailing/includes/navbar.html' %}
+	</header>
+{% endcache %}
 
 <div class="container mt-4">
 	<div class="row">
@@ -36,9 +39,12 @@
 		<div class="col-md-4">
 			<div class="h4 text-center">Статьи из блога</div>
 			<ul class="list-group">
-				<li class="list-group-item">Статья 1: <a href="#">Заголовок статьи 1</a></li>
-				<li class="list-group-item">Статья 2: <a href="#">Заголовок статьи 2</a></li>
-				<li class="list-group-item">Статья 3: <a href="#">Заголовок статьи 3</a></li>
+				<li class="list-group-item">Статья 1: <a
+						href="{% url 'blog:READ_one' blog_1.pk %}">{{ blog_1.title }}</a></li>
+				<li class="list-group-item">Статья 2: <a
+						href="{% url 'blog:READ_one' blog_2.pk %}">{{ blog_2.title }}</a></li>
+				<li class="list-group-item">Статья 3: <a
+						href="{% url 'blog:READ_one' blog_3.pk %}">{{ blog_3.title }}</a></li>
 			</ul>
 		</div>
 	</div>
@@ -49,9 +55,11 @@
 	</div>
 </div>
 
-<footer class="text-muted">
-	{% include 'mailing/includes/footer.html' %}
-</footer>
+{% cache 0 'footer' %}
+	<footer class="text-muted">
+		{% include 'mailing/includes/footer.html' %}
+	</footer>
+{% endcache %}
 
 <!-- Bootstrap core JavaScript ---------------------------------------------------------------------------------------->
 <!-- Placed at the end of the document so the pages load faster ------------------------------------------------------->

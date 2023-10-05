@@ -1,8 +1,9 @@
 <div class="container">
 	Email Рассылка<br>
 	Приложение для рассылки рекламных сообщений<br>
-	Посетите <a href="{% url 'mailing:mailing_list' %}">домашнюю страницу</a> или почитайте <a href="#">наш блог</a><br>
-	{% if user.is_superuser %}
+	Посетите <a href="{% url 'mailing:mailing_list' %}">домашнюю страницу</a> или почитайте <a
+		href="{% url 'blog:READ_all' %}">наш блог</a><br>
+	{% if not request.path|slice:":6" == '/blog/' and user.is_superuser %}
 		<a href="/admin">Администрирование</a>
 	{% endif %}
 	<div class="float-right">

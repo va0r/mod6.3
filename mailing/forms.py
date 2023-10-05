@@ -1,6 +1,6 @@
 from django import forms
 
-from mailing.models import MailingSettings, Client, MailingMessage
+from mailing.models import MailingSettings, Client, MailingMessage, ClientGroup
 
 
 class StyleFormMixin:
@@ -15,18 +15,57 @@ class StyleFormMixin:
 
 
 class MailingSettingsForm(StyleFormMixin, forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        super().__init__(*args, **kwargs)
+        if self.request:
+            self.fields['groups'].queryset = ClientGroup.objects.filter(owner=self.request.user)
+            self.fields['message'].queryset = MailingMessage.objects.filter(owner=self.request.user)
+
     class Meta:
         model = MailingSettings
-        fields = '__all__'
+        exclude = ('owner',)
+
+
+class MailingSettingsModeratorForm(StyleFormMixin, forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        request = kwargs.pop('request', None)
+        super().__init__(*args, **kwargs)
+
+    class Meta:
+        model = MailingSettings
+        fields = ['status']
 
 
 class ClientForm(StyleFormMixin, forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        super().__init__(*args, **kwargs)
+        if self.request:
+            self.fields['groups'].queryset = ClientGroup.objects.filter(owner=self.request.user)
+
     class Meta:
         model = Client
-        fields = '__all__'
+        exclude = ('owner',)
+
+
+class ClientModeratorForm(StyleFormMixin, forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        request = kwargs.pop('request', None)
+        super().__init__(*args, **kwargs)
+
+    class Meta:
+        model = Client
+        fields = ['is_blocked']
+
+
+class ClientGroupForm(StyleFormMixin, forms.ModelForm):
+    class Meta:
+        model = ClientGroup
+        exclude = ('owner',)
 
 
 class MessageForm(StyleFormMixin, forms.ModelForm):
     class Meta:
         model = MailingMessage
-        fields = '__all__'
+        exclude = ('owner',)

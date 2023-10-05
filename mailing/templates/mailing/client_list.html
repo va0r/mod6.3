@@ -2,18 +2,19 @@
 
 {% block content %}
 	<div class="col-8">
-		<a href="{% url 'mailing:clients_create' %}" class="btn btn-success" style="width: 100%">
-			Создать клиента рассылки
-		</a>
+		{% if not is_moderator %}
+			<a href="{% url 'mailing:clients_create' %}" class="btn btn-success" style="width: 100%">
+				Создать клиента рассылки
+			</a>
+		{% else %}
+			<div style="background-color: darkred; text-align: center; width: 100%;">
+				<p style="margin: 0; padding: 7px; color: white;">Режим модератора</p>
+			</div>
+		{% endif %}
 	</div>
-
 	<div class="col-8"><br></div>
 	<div class="col-8">
-		<div style="background-color: lightgrey; padding: 20px 20px; text-align: left; height: 150px;">
-			<p><b>Клиент рассылки</b> -- это получатель рассылки.<br>
-				Для того, чтобы получить письмо, клиент не должен быть заблокирован.<br>
-				Клиент автоматически получает все рассылки, запущенные в настоящий момент.</p>
-		</div>
+		<div style="background-color: lightgrey; padding: 20px 20px; text-align: left; height: 20px;"></div>
 	</div>
 	<div class="col-8"><br></div>
 
@@ -41,7 +42,16 @@
 									<td>Заблокирован</td>
 									<td>{{ item.is_blocked }}</td>
 								</tr>
-
+								<tr>
+									<td>Группа</td>
+									<td>
+										{% for group in item.groups.all %}
+											{{ group.name }}{% if not forloop.last %},<br> {% endif %}
+										{% empty %}
+											Нет групп
+										{% endfor %}
+									</td>
+								</tr>
 							</table>
 						</div>
 						<div class="card-footer">
@@ -53,7 +63,10 @@
 								<a href="{% url 'mailing:client__is_blocked_toggle' item.pk %}"
 								   class="btn badge-warning">block</a>
 							{% endif %}
-							<a href="{% url 'mailing:clients_delete' item.pk %}" class="btn badge-danger">Удалить</a>
+							{% if not is_moderator %}
+								<a href="{% url 'mailing:mailing_delete' item.pk %}"
+								   class="btn badge-danger">Удалить</a>
+							{% endif %}
 						</div>
 					</div>
 				</div>

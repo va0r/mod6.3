@@ -2,21 +2,21 @@
 
 {% block content %}
 	<div class="col-8">
-		<a href="{% url 'mailing:mailing_create' %}" class="btn btn-success" style="width: 100%">
-			Создать настройки рассылки
-		</a>
+		{% if not is_moderator %}
+			<a href="{% url 'mailing:mailing_create' %}" class="btn btn-success" style="width: 100%">
+				Создать настройки рассылки
+			</a>
+		{% else %}
+			<div style="background-color: darkred; text-align: center; width: 100%;">
+				<p style="margin: 0; padding: 7px; color: white;">Режим модератора</p>
+			</div>
+		{% endif %}
 	</div>
-
 	<div class="col-8"><br></div>
 	<div class="col-8">
-		<div style="background-color: lightgrey; padding: 20px 20px; text-align: left; height: 150px">
-			<p><b>Настройки рассылки</b> -- это определение значимых параметров рассылки.<br>
-				При создании рассылки определяются время, период и статус рассылки, а так же выбирается сообщение рассылки.<br>
-				Сообщение рассылки отправляется всем клиентам рассылки.</p>
-		</div>
+		<div style="background-color: lightgrey; padding: 20px 20px; text-align: left; height: 20px;"></div>
 	</div>
 	<div class="col-8"><br></div>
-
 	<div class="col-8">
 		<div class="row">
 			{% for item in object_list %}
@@ -41,11 +41,24 @@
 									<td>Сообщение</td>
 									<td>{{ item.message }}</td>
 								</tr>
+								<tr>
+									<td>Группа</td>
+									<td>
+										{% for group in item.groups.all %}
+											{{ group.name }}{% if not forloop.last %},<br> {% endif %}
+										{% empty %}
+											Нет групп
+										{% endfor %}
+									</td>
+								</tr>
 							</table>
 						</div>
 						<div class="card-footer">
 							<a href="{% url 'mailing:mailing_update' item.pk %}" class="btn badge-info">Изменить</a>
-							<a href="{% url 'mailing:mailing_delete' item.pk %}" class="btn badge-danger">Удалить</a>
+							{% if not is_moderator %}
+								<a href="{% url 'mailing:mailing_delete' item.pk %}"
+								   class="btn badge-danger">Удалить</a>
+							{% endif %}
 						</div>
 					</div>
 				</div>

@@ -13,21 +13,26 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 import os
 from pathlib import Path
 
-from dotenv import load_dotenv
+from celery.schedules import crontab
+from dotenv import load_dotenv, find_dotenv
+
+# Импортируйте файл конфигурации журналирования
+import logging_config
+import mailing.permissions
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-load_dotenv(BASE_DIR / '.env')
+load_dotenv(find_dotenv())
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-su$f08mt=#sov-$&e^!5w$ei%uht3u&g4(mwz)+15phl3f+5u%'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG') == 'True'
 
 ALLOWED_HOSTS = []
 
@@ -41,10 +46,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'django_crontab',
+    'celery',
 
     'mailing',
     'users',
+    'blog',
 ]
 
 MIDDLEWARE = [
@@ -83,8 +89,8 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'skychimp',
-        'USER': 'postgres'
+        'NAME': os.getenv('DATABASE_NAME'),
+        'USER': os.getenv('DATABASE_USER'),
     }
 }
 
@@ -110,11 +116,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
 LANGUAGE_CODE = 'ru-ru'
-
 TIME_ZONE = 'Europe/Moscow'
-
 USE_I18N = True
-
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
@@ -131,7 +134,7 @@ STATICFILES_DIRS = (
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # MEDIA URL & ROOT
-MEDIA_URL = '/media/'
+MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Убираем warnings двойного использования templatetags
@@ -139,9 +142,9 @@ SILENCED_SYSTEM_CHECKS = ["templates.E003"]
 
 # Модель аутентификации пользователя и редиректы
 AUTH_USER_MODEL = 'users.User'
-# LOGIN_REDIRECT_URL = '/'
-# LOGOUT_REDIRECT_URL = '/'
-# LOGIN_URL = '/users/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+LOGIN_URL = '/users/'
 
 # Данные для отправки писем
 EMAIL_HOST = os.getenv('EMAIL_HOST')
@@ -151,14 +154,23 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL') == 'True'
 EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS') == 'True'
 
-CRONJOBS = [
-    ('*/5 * * * *', 'mailing.services.send_mails')
-]
+# Celery configuration
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+
+# Настройки для Celery Beat (планировщика)
+CELERY_BEAT_SCHEDULE = {
+    'send-mail-every-day': {
+        'task': 'mailing.tasks.send_mail_task',  # Путь к задаче в вашем приложении
+        'schedule': crontab(minute=40, hour=22),  # Здесь можно настроить расписание для рассылки
+    },
+}
+
+# Другие настройки
+
 
 # Кеш
-
 CACHE_ENABLED = os.getenv('CACHE_ENABLED') == 'True'
-
 if CACHE_ENABLED:
     CACHES = {
         "default": {
@@ -166,3 +178,6 @@ if CACHE_ENABLED:
             "LOCATION": os.getenv('CACHE_LOCATION'),
         }
     }
+
+# Favicon
+FAVICON_PATH = ''

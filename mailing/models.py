@@ -1,29 +1,23 @@
-import datetime
-
-from django.conf import settings
-from django.core.mail import send_mail
+from django.contrib.auth import get_user_model
 from django.db import models
 
 NULLABLE = {'blank': True, 'null': True}
+User = get_user_model()
 
 
-def send_email_one(ms, mc):
-    result = send_mail(
-        subject=ms.message.subject,
-        message=ms.message.message,
-        from_email=settings.EMAIL_HOST_USER,
-        recipient_list=[mc.email],
-        fail_silently=False
-    )
-    MailingLog.objects.create(
-        status=MailingLog.STATUS_OK if result else MailingLog.STATUS_FAILED,
-        settings=ms,
-        client=mc
-    )
+class ClientGroup(models.Model):
+    name = models.CharField(max_length=255, verbose_name='Название группы')
 
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='client_groups', verbose_name='Владелец',
+                              **NULLABLE)
 
-def get_now_utc():
-    return datetime.datetime.now().astimezone(datetime.timezone.utc)
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Группа клиентов'
+        verbose_name_plural = 'Группы клиентов'
+        ordering = ['pk']
 
 
 class Client(models.Model):
@@ -34,29 +28,15 @@ class Client(models.Model):
     is_blocked = models.BooleanField(verbose_name='Заблокирован', default=False)
     domain = models.CharField(verbose_name='Домен', max_length=255, blank=True, editable=False)
 
+    groups = models.ManyToManyField(ClientGroup, related_name='clients', blank=True, verbose_name='Группы клиентов',
+                                    default=None)
+
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='clients', verbose_name='Владелец',
+                              **NULLABLE)
+
     def save(self, *args, **kwargs):
-        # запись домена почты в объект "Клиент"
         self.domain = self.email.split('@')[-1]
-        # сохранение объекта
         super(Client, self).save(*args, **kwargs)
-        # отправка рассылок объекту
-        if not self.is_blocked:
-            now_utc = get_now_utc()
-            for ms in MailingSettings.objects.filter(status=MailingSettings.STATUS_STARTED):
-                ml = MailingLog.objects.filter(client=self.id, settings=ms)
-                if ml.exists():
-                    last_try_date_utc = ml.order_by('-last_try').first().last_try.astimezone(datetime.timezone.utc)
-                    if ms.period == MailingSettings.PERIOD_DAILY:
-                        if (now_utc - last_try_date_utc).days >= 1:
-                            send_email_one(ms, self)
-                    elif ms.period == MailingSettings.PERIOD_WEEKLY:
-                        if (now_utc - last_try_date_utc).days >= 7:
-                            send_email_one(ms, self)
-                    elif ms.period == MailingSettings.PERIOD_MONTHLY:
-                        if (now_utc - last_try_date_utc).days >= 30:
-                            send_email_one(ms, self)
-                else:
-                    send_email_one(ms, self)
 
     def __str__(self):
         return f'{self.first_name} {self.last_name} ({self.email})'
@@ -80,10 +60,12 @@ class MailingSettings(models.Model):
     STATUS_CREATED = 'created'
     STATUS_STARTED = 'started'
     STATUS_DONE = 'done'
+    STATUS_OFF = 'off'
     STATUSES = (
         (STATUS_STARTED, 'Запущена'),
         (STATUS_CREATED, 'Создана'),
         (STATUS_DONE, 'Завершена'),
+        (STATUS_OFF, 'Выключена'),
     )
 
     time = models.TimeField(verbose_name='Время')
@@ -91,27 +73,11 @@ class MailingSettings(models.Model):
     status = models.CharField(max_length=20, choices=STATUSES, default=STATUS_CREATED, verbose_name='Статус')
     message = models.ForeignKey('MailingMessage', on_delete=models.CASCADE, verbose_name='Сообщение', **NULLABLE)
 
-    def save(self, *args, **kwargs):
-        # сохранение объекта
-        super(MailingSettings, self).save(*args, **kwargs)
-        # отправка рассылки объектам
-        if self.status == 'started':
-            now_utc = get_now_utc()
-            for mc in Client.objects.filter(is_blocked=False):
-                ml = MailingLog.objects.filter(client=mc.id, settings=self)
-                if ml.exists():
-                    last_try_date_utc = ml.order_by('-last_try').first().last_try.astimezone(datetime.timezone.utc)
-                    if self.period == MailingSettings.PERIOD_DAILY:
-                        if (now_utc - last_try_date_utc).days >= 1:
-                            send_email_one(self, mc)
-                    elif self.period == MailingSettings.PERIOD_WEEKLY:
-                        if (now_utc - last_try_date_utc).days >= 7:
-                            send_email_one(self, mc)
-                    elif self.period == MailingSettings.PERIOD_MONTHLY:
-                        if (now_utc - last_try_date_utc).days >= 30:
-                            send_email_one(self, mc)
-                else:
-                    send_email_one(self, mc)
+    groups = models.ManyToManyField('ClientGroup', related_name='mailing_settings', blank=True,
+                                    verbose_name='Группы рассылок')
+
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mailing_settings', verbose_name='Владелец',
+                              **NULLABLE)
 
     def __str__(self):
         return f'{self.time} / {self.period}'
@@ -125,8 +91,11 @@ class MailingMessage(models.Model):
     subject = models.CharField(max_length=250, verbose_name='Тема')
     message = models.TextField(verbose_name='Тело')
 
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mailing_message', verbose_name='Владелец',
+                              **NULLABLE)
+
     def __str__(self):
-        return f'{self.subject}'
+        return self.subject
 
     class Meta:
         verbose_name = 'Письмо'
@@ -156,9 +125,6 @@ class MailingLog(models.Model):
 class Contact(models.Model):
     key = models.CharField(max_length=25, verbose_name='Ключ')
     value = models.CharField(max_length=100, verbose_name='Значение')
-
-    def __str__(self):
-        return f'{self.key}: {self.value}'
 
     class Meta:
         verbose_name = 'Контакт'
